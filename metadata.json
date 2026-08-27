@@ -1,0 +1,6 @@
+{
+  "name": "Meridian Private Dashboard",
+  "description": "Private wealth and portfolio management dashboard for Meridian Private clients.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
