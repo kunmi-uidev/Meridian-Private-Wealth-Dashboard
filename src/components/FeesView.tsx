@@ -67,7 +67,7 @@ const FEE_HOLDINGS: FeeItem[] = [
 ];
 
 export const FeesView: React.FC<FeesViewProps> = ({ isDark }) => {
-  const [showPlainEnglish, setShowPlainEnglish] = useState(true);
+  const [showPlainEnglish, setShowPlainEnglish] = useState(false);
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
 
   return (

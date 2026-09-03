@@ -134,24 +134,26 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Advisor Badge */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs sm:text-sm text-[#808080]">
-            Advisor:
-          </span>
-          <button
-            id="advisor-pill"
-            onClick={onOpenAdvisor}
-            className={`flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs sm:text-sm font-medium transition-all cursor-pointer ${
-              isDark
-                ? 'bg-slate-800/90 border-slate-700 text-slate-200 hover:border-slate-600'
-                : 'bg-white border-slate-200 text-slate-800 hover:border-slate-300 shadow-xs'
-            }`}
-          >
-            <span className="w-5 h-5 rounded-full bg-[#EBF2FE] dark:bg-blue-900/60 text-[#1D63ED] dark:text-blue-300 text-[10px] font-medium flex items-center justify-center">
-              MT
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs sm:text-sm text-[#808080] hidden sm:inline">
+              Advisor:
             </span>
-            <span className="text-slate-700 dark:text-slate-200">Mark T.</span>
-          </button>
+            <button
+              id="advisor-pill"
+              onClick={onOpenAdvisor}
+              className={`flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs sm:text-sm font-medium transition-all cursor-pointer ${
+                isDark
+                  ? 'bg-slate-800/90 border-slate-700 text-slate-200 hover:border-slate-600'
+                  : 'bg-white border-slate-200 text-slate-800 hover:border-slate-300 shadow-xs'
+              }`}
+            >
+              <span className="w-5 h-5 rounded-full bg-[#EBF2FE] dark:bg-blue-900/60 text-[#1D63ED] dark:text-blue-300 text-[10px] font-medium flex items-center justify-center">
+                MT
+              </span>
+              <span className="text-slate-700 dark:text-slate-200">Mark T.</span>
+            </button>
+          </div>
         </div>
       </div>
     </header>

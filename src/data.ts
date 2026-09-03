@@ -23,7 +23,7 @@ export const KPI_CARDS: KpiCardData[] = [
     value: '$280,960',
     change: '1.24%',
     isPositive: false,
-    footer: '1.24% Blended',
+    footer: '1.24% Blended fee rate',
   },
   {
     id: 'ytd-return',

@@ -31,7 +31,7 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({ isDark }) => {
                   isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
                 }`}
               >
-                Holdings
+                Holdings & Strategy
               </th>
               <th
                 className={`py-4 sm:py-5 px-4 sm:px-6 font-medium w-[20%] ${
@@ -59,72 +59,75 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({ isDark }) => {
 
           {/* Body */}
           <tbody className="text-xs sm:text-sm">
-            {HOLDINGS.map((row, index) => (
-              <tr
-                key={row.id}
-                id={`holding-row-${row.id}`}
-                className={`transition-colors ${
-                  index !== HOLDINGS.length - 1
-                    ? isDark
-                      ? 'border-b border-slate-800'
-                      : 'border-b border-slate-200/70'
-                    : ''
-                } ${
-                  isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50/50'
-                }`}
-              >
-                {/* Holding Name */}
-                <td
-                  className={`py-4 sm:py-5 px-4 sm:px-6 font-normal ${
-                    isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
+            {HOLDINGS.map((row, index) => {
+              return (
+                <tr
+                  key={row.id}
+                  id={`holding-row-${row.id}`}
+                  className={`transition-colors ${
+                    index !== HOLDINGS.length - 1
+                      ? isDark
+                        ? 'border-b border-slate-800'
+                        : 'border-b border-slate-200/70'
+                      : ''
+                  } ${
+                    isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50/50'
                   }`}
                 >
-                  {row.name}
-                </td>
+                  {/* Holding Name */}
+                  <td className="py-4 sm:py-5 px-4 sm:px-6">
+                    <span
+                      className={`font-normal ${
+                        isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
+                      }`}
+                    >
+                      {row.name}
+                    </span>
+                  </td>
 
-                {/* Value */}
-                <td
-                  className={`py-4 sm:py-5 px-4 sm:px-6 font-normal ${
-                    isDark ? 'text-slate-400' : 'text-[#808080]'
-                  }`}
-                >
-                  {row.valueFormatted}
-                </td>
-
-                {/* Weight */}
-                <td
-                  className={`py-4 sm:py-5 px-4 sm:px-6 font-normal ${
-                    isDark ? 'text-slate-400' : 'text-[#808080]'
-                  }`}
-                >
-                  {row.weightFormatted}
-                </td>
-
-                {/* Change (QTD) Badge */}
-                <td className="py-4 sm:py-5 px-4 sm:px-6">
-                  <div
-                    className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md text-[11px] sm:text-xs font-medium ${
-                      row.isPositive
-                        ? isDark
-                          ? 'bg-emerald-950/60 text-emerald-400'
-                          : 'bg-[#E7F8EC] text-[#16A34A]'
-                        : isDark
-                        ? 'bg-rose-950/60 text-rose-400'
-                        : 'bg-[#FEECEB] text-[#DC2626]'
+                  {/* Value */}
+                  <td
+                    className={`py-4 sm:py-5 px-4 sm:px-6 font-normal ${
+                      isDark ? 'text-slate-400' : 'text-[#808080]'
                     }`}
                   >
-                    <span className="text-[8px] sm:text-[9px] leading-none">
-                      {row.isPositive ? '▲' : '▼'}
-                    </span>
-                    <span>{row.changeQtdFormatted}</span>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                    {row.valueFormatted}
+                  </td>
+
+                  {/* Weight */}
+                  <td
+                    className={`py-4 sm:py-5 px-4 sm:px-6 font-normal ${
+                      isDark ? 'text-slate-400' : 'text-[#808080]'
+                    }`}
+                  >
+                    {row.weightFormatted}
+                  </td>
+
+                  {/* Change (QTD) Badge */}
+                  <td className="py-4 sm:py-5 px-4 sm:px-6">
+                    <div
+                      className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md text-[11px] sm:text-xs font-medium ${
+                        row.isPositive
+                          ? isDark
+                            ? 'bg-emerald-950/60 text-emerald-400'
+                            : 'bg-[#E7F8EC] text-[#16A34A]'
+                          : isDark
+                          ? 'bg-rose-950/60 text-rose-400'
+                          : 'bg-[#FEECEB] text-[#DC2626]'
+                      }`}
+                    >
+                      <span className="text-[8px] sm:text-[9px] leading-none">
+                        {row.isPositive ? '▲' : '▼'}
+                      </span>
+                      <span>{row.changeQtdFormatted}</span>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
     </div>
   );
 };
-

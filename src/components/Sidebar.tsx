@@ -285,7 +285,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             }`}
           >
             <Icon
-              icon={activeNav === 'Markets' ? 'solar:graph-up-bold' : 'solar:graph-up-linear'}
+              icon={activeNav === 'Markets' ? 'solar:chart-2-bold' : 'solar:chart-2-linear'}
               className={`w-5 h-5 ${
                 activeNav === 'Markets'
                   ? isDark
