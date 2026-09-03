@@ -8,6 +8,8 @@ interface SidebarProps {
   onOpenAdvisor: () => void;
   onOpenSchedule: () => void;
   onToggleTheme: () => void;
+  onOpenOnboarding?: () => void;
+  readingMode?: 'simple' | 'expert' | null;
   isDark: boolean;
   mobileOpen?: boolean;
   onCloseMobile?: () => void;
@@ -19,6 +21,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenAdvisor,
   onOpenSchedule,
   onToggleTheme,
+  onOpenOnboarding,
+  readingMode = null,
   isDark,
   mobileOpen = false,
   onCloseMobile,
@@ -330,6 +334,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
             />
             <span>Help</span>
           </button>
+
+          {/* Reading Style Switcher */}
+          {onOpenOnboarding && (
+            <button
+              id="nav-reading-style"
+              onClick={() => handleNavClick('Reading Style', onOpenOnboarding)}
+              className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-left transition-colors cursor-pointer text-[#808080] dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+            >
+              <div className="flex items-center gap-3">
+                <Icon icon="solar:text-square-linear" className="w-5 h-5 text-[#808080]" />
+                <span>Reading Style</span>
+              </div>
+              <span className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 capitalize">
+                {readingMode === 'expert' ? 'Expert' : readingMode === 'simple' ? 'Simple' : 'Set style'}
+              </span>
+            </button>
+          )}
 
           {/* Theme */}
           <button

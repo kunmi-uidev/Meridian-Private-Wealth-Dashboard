@@ -15,6 +15,7 @@ import { LiquidityView } from './components/LiquidityView';
 import { AdvisorModal } from './components/AdvisorModal';
 import { ScheduleAuditModal } from './components/ScheduleAuditModal';
 import { SettingsModal } from './components/SettingsModal';
+import { OnboardingModal } from './components/OnboardingModal';
 
 export default function App() {
   const [activeNav, setActiveNav] = useState('Overview');
@@ -24,6 +25,8 @@ export default function App() {
   const [advisorModalOpen, setAdvisorModalOpen] = useState(false);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+  const [onboardingOpen, setOnboardingOpen] = useState(true);
+  const [readingMode, setReadingMode] = useState<'simple' | 'expert' | null>(null);
 
   const toggleTheme = () => {
     setIsDark((prev) => !prev);
@@ -47,6 +50,8 @@ export default function App() {
         onOpenAdvisor={() => setAdvisorModalOpen(true)}
         onOpenSchedule={() => setScheduleModalOpen(true)}
         onToggleTheme={toggleTheme}
+        onOpenOnboarding={() => setOnboardingOpen(true)}
+        readingMode={readingMode}
         isDark={isDark}
         mobileOpen={mobileMenuOpen}
         onCloseMobile={() => setMobileMenuOpen(false)}
@@ -110,6 +115,14 @@ export default function App() {
         onClose={() => setSettingsModalOpen(false)}
         isDark={isDark}
         onToggleTheme={toggleTheme}
+      />
+
+      <OnboardingModal
+        isOpen={onboardingOpen}
+        onClose={() => setOnboardingOpen(false)}
+        isDark={isDark}
+        selectedMode={readingMode}
+        onSelectMode={(mode) => setReadingMode(mode)}
       />
     </div>
   );
