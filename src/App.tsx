@@ -16,8 +16,14 @@ import { AdvisorModal } from './components/AdvisorModal';
 import { ScheduleAuditModal } from './components/ScheduleAuditModal';
 import { SettingsModal } from './components/SettingsModal';
 import { OnboardingModal } from './components/OnboardingModal';
+import { LoginView } from './components/LoginView';
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<{ name: string; email: string }>({
+    name: '',
+    email: '',
+  });
   const [activeNav, setActiveNav] = useState('Overview');
   const [activeTab, setActiveTab] = useState('Overview');
   const [isDark, setIsDark] = useState(false);
@@ -31,6 +37,21 @@ export default function App() {
   const toggleTheme = () => {
     setIsDark((prev) => !prev);
   };
+
+  // Login flow prior to onboarding
+  if (!isAuthenticated) {
+    return (
+      <LoginView
+        onNext={(userData) => {
+          setUser(userData);
+          setIsAuthenticated(true);
+          setOnboardingOpen(true);
+        }}
+        isDark={isDark}
+        onToggleTheme={toggleTheme}
+      />
+    );
+  }
 
   return (
     <div
@@ -52,6 +73,8 @@ export default function App() {
         onToggleTheme={toggleTheme}
         onOpenOnboarding={() => setOnboardingOpen(true)}
         readingMode={readingMode}
+        user={user}
+        onLogout={() => setIsAuthenticated(false)}
         isDark={isDark}
         mobileOpen={mobileMenuOpen}
         onCloseMobile={() => setMobileMenuOpen(false)}
@@ -71,6 +94,7 @@ export default function App() {
             onToggleTheme={toggleTheme}
             onOpenSettings={() => setSettingsModalOpen(true)}
             onToggleMobileMenu={() => setMobileMenuOpen((prev) => !prev)}
+            userName={user.name}
             isDark={isDark}
           />
 
@@ -121,6 +145,7 @@ export default function App() {
         isOpen={onboardingOpen}
         onClose={() => setOnboardingOpen(false)}
         isDark={isDark}
+        userName={user.name}
         selectedMode={readingMode}
         onSelectMode={(mode) => setReadingMode(mode)}
       />

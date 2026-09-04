@@ -10,6 +10,8 @@ interface SidebarProps {
   onToggleTheme: () => void;
   onOpenOnboarding?: () => void;
   readingMode?: 'simple' | 'expert' | null;
+  user?: { name: string; email: string };
+  onLogout?: () => void;
   isDark: boolean;
   mobileOpen?: boolean;
   onCloseMobile?: () => void;
@@ -23,10 +25,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onToggleTheme,
   onOpenOnboarding,
   readingMode = null,
+  user = { name: '', email: '' },
+  onLogout,
   isDark,
   mobileOpen = false,
   onCloseMobile,
 }) => {
+  const [profileOpen, setProfileOpen] = React.useState(false);
+
+  const displayName = user.name?.trim() || 'Client Profile';
+  const displayEmail = user.email?.trim() || 'Client';
+  const initials = (user.name || 'Client')
+    .split(' ')
+    .filter(Boolean)
+    .map((n) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase() || 'CP';
+
   const handleNavClick = (nav: string, action?: () => void) => {
     if (action) {
       action();
@@ -416,30 +432,72 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* User Profile Card */}
-        <div
-          id="user-profile-widget"
-          className={`flex items-center justify-between p-2 rounded-xl transition-colors cursor-pointer ${
-            isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'
-          }`}
-        >
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-9 h-9 rounded-full bg-[#DCEBFE] dark:bg-blue-900/60 text-[#1D63ED] dark:text-blue-300 font-medium text-xs flex items-center justify-center flex-shrink-0">
-              OO
+        <div className="relative">
+          <div
+            id="user-profile-widget"
+            onClick={() => setProfileOpen((prev) => !prev)}
+            className={`flex items-center justify-between p-2 rounded-xl transition-colors cursor-pointer ${
+              profileOpen
+                ? isDark ? 'bg-slate-800' : 'bg-slate-100'
+                : isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'
+            }`}
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-9 h-9 rounded-full bg-[#DCEBFE] dark:bg-blue-900/60 text-[#1D63ED] dark:text-blue-300 font-medium text-xs flex items-center justify-center flex-shrink-0">
+                {initials}
+              </div>
+              <div className="flex flex-col min-w-0 text-left">
+                <span
+                  className={`text-xs font-medium truncate ${
+                    isDark ? 'text-slate-200' : 'text-slate-900'
+                  }`}
+                >
+                  {displayName}
+                </span>
+                <span className="text-[11px] text-[#808080] truncate">
+                  {displayEmail}
+                </span>
+              </div>
             </div>
-            <div className="flex flex-col min-w-0">
-              <span
-                className={`text-xs font-medium truncate ${
-                  isDark ? 'text-slate-200' : 'text-slate-900'
-                }`}
-              >
-                Oluwabukunmi Ogunneye
-              </span>
-              <span className="text-[11px] text-[#808080] truncate">
-                bukunmiogunneye0@gmail.com
-              </span>
-            </div>
+            <ChevronsUpDown className="w-3.5 h-3.5 text-[#808080] flex-shrink-0 ml-1" />
           </div>
-          <ChevronsUpDown className="w-3.5 h-3.5 text-[#808080] flex-shrink-0 ml-1" />
+
+          {/* Profile Popover Menu */}
+          {profileOpen && (
+            <div
+              className={`absolute bottom-full left-0 right-0 mb-2 p-1.5 rounded-xl border shadow-lg z-30 animate-in fade-in slide-in-from-bottom-2 duration-150 ${
+                isDark ? 'bg-slate-850 border-slate-700 text-slate-200' : 'bg-white border-slate-200 text-slate-800'
+              }`}
+            >
+              {onOpenOnboarding && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setProfileOpen(false);
+                    onOpenOnboarding();
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs hover:bg-slate-100 dark:hover:bg-slate-800 text-left transition-colors cursor-pointer"
+                >
+                  <Icon icon="solar:text-square-linear" className="w-4 h-4 text-slate-400" />
+                  <span>Change Reading Style</span>
+                </button>
+              )}
+              {onLogout && (
+                <button
+                  type="button"
+                  id="user-logout-btn"
+                  onClick={() => {
+                    setProfileOpen(false);
+                    onLogout();
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-left transition-colors cursor-pointer"
+                >
+                  <Icon icon="solar:logout-2-linear" className="w-4 h-4" />
+                  <span>Log out / Switch Account</span>
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

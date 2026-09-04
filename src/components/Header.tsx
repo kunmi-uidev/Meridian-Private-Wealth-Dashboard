@@ -9,6 +9,7 @@ interface HeaderProps {
   onToggleTheme: () => void;
   onOpenSettings: () => void;
   onToggleMobileMenu?: () => void;
+  userName?: string;
   isDark: boolean;
 }
 
@@ -19,6 +20,7 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleTheme,
   onOpenSettings,
   onToggleMobileMenu,
+  userName = 'Oluwabukunmi',
   isDark,
 }) => {
   return (
@@ -49,7 +51,7 @@ export const Header: React.FC<HeaderProps> = ({
                 isDark ? 'text-white' : 'text-slate-900'
               }`}
             >
-              Good Morning, Oluwabukunmi
+              Good Morning, {userName && userName.trim() ? (userName.trim().split(' ')[0] || userName) : 'Client'}
             </h1>
             <p className="text-xs sm:text-sm text-[#808080] mt-0.5 font-normal truncate">
               Here's how we are looking today

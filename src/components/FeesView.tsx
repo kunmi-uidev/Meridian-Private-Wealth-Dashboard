@@ -126,7 +126,7 @@ export const FeesView: React.FC<FeesViewProps> = ({ isDark }) => {
               }`}
             >
               <span className="text-[9px] sm:text-[10px]">▼</span>
-              <span>1.24%</span>
+              <span>0.9%</span>
             </div>
           </div>
 
@@ -137,10 +137,10 @@ export const FeesView: React.FC<FeesViewProps> = ({ isDark }) => {
           >
             {showPlainEnglish ? (
               <span className="text-slate-600 dark:text-slate-300">
-                <strong className="font-medium text-slate-900 dark:text-slate-100">1.24% average fee</strong> (You save vs 1.50% industry standard)
+                <strong className="font-medium text-slate-900 dark:text-slate-100">0.9% average fee</strong> (You save vs 1.50% industry standard)
               </span>
             ) : (
-              '1.24% Blended'
+              '0.9% Blended'
             )}
           </div>
         </div>
@@ -305,7 +305,7 @@ export const FeesView: React.FC<FeesViewProps> = ({ isDark }) => {
               Fee Summary in Plain English
             </span>
             <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5 leading-relaxed">
-              For every <strong>$1,000</strong> in your portfolio, you pay about <strong>$12.40 per year</strong> in total all-in fees. In return, your portfolio has generated <strong>+$79.00 per $1,000</strong> in take-home profit so far this year.
+              For every <strong>$1,000</strong> in your portfolio, you pay about <strong>$9.00 per year</strong> in total all-in fees. In return, your portfolio has generated <strong>+$79.00 per $1,000</strong> in take-home profit so far this year.
             </p>
           </div>
         </div>
