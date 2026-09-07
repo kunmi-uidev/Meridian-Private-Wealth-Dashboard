@@ -70,3 +70,4 @@ export const PortfolioAllocation: React.FC<PortfolioAllocationProps> = ({
     </div>
   );
 };
+

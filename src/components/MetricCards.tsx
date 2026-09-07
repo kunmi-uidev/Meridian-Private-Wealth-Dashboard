@@ -71,3 +71,4 @@ export const MetricCards: React.FC<MetricCardsProps> = ({ isDark }) => {
     </div>
   );
 };
+

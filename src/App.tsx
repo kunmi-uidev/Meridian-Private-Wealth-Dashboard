@@ -19,34 +19,116 @@ import { OnboardingModal } from './components/OnboardingModal';
 import { LoginView } from './components/LoginView';
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<{ name: string; email: string }>({
-    name: '',
-    email: '',
+  // Persistent Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('meridian_auth');
+      return saved === 'true';
+    } catch {
+      return false;
+    }
   });
+
+  // Persistent User Data
+  const [user, setUser] = useState<{ name: string; email: string }>(() => {
+    try {
+      const saved = localStorage.getItem('meridian_user');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed.name === 'string' && parsed.name.trim()) {
+          return parsed;
+        }
+      }
+    } catch {}
+    return { name: '', email: '' };
+  });
+
+  // Persistent Reading Mode ('simple' | 'expert')
+  const [readingMode, setReadingMode] = useState<'simple' | 'expert'>(() => {
+    try {
+      const saved = localStorage.getItem('meridian_reading_mode');
+      if (saved === 'expert' || saved === 'simple') return saved;
+    } catch {}
+    return 'simple';
+  });
+
+  // Onboarding Modal opens only if user hasn't finished onboarding yet
+  const [onboardingOpen, setOnboardingOpen] = useState<boolean>(() => {
+    try {
+      const completed = localStorage.getItem('meridian_onboarding_completed');
+      const auth = localStorage.getItem('meridian_auth');
+      if (auth === 'true' && completed === 'true') {
+        return false;
+      }
+    } catch {}
+    return false;
+  });
+
   const [activeNav, setActiveNav] = useState('Overview');
   const [activeTab, setActiveTab] = useState('Overview');
-  const [isDark, setIsDark] = useState(false);
+
+  // Persistent Dark Theme
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('meridian_theme') === 'dark';
+    } catch {
+      return false;
+    }
+  });
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [advisorModalOpen, setAdvisorModalOpen] = useState(false);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
-  const [onboardingOpen, setOnboardingOpen] = useState(true);
-  const [readingMode, setReadingMode] = useState<'simple' | 'expert' | null>(null);
 
   const toggleTheme = () => {
-    setIsDark((prev) => !prev);
+    setIsDark((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('meridian_theme', next ? 'dark' : 'light');
+      } catch {}
+      return next;
+    });
+  };
+
+  const handleLogin = (userData: { name: string; email: string }) => {
+    setUser(userData);
+    setIsAuthenticated(true);
+    setOnboardingOpen(true);
+    try {
+      localStorage.setItem('meridian_auth', 'true');
+      localStorage.setItem('meridian_user', JSON.stringify(userData));
+    } catch (e) {
+      console.error('Failed to persist auth to localStorage', e);
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    try {
+      localStorage.removeItem('meridian_auth');
+      localStorage.removeItem('meridian_user');
+      localStorage.removeItem('meridian_onboarding_completed');
+    } catch (e) {
+      console.error('Failed to clear localStorage', e);
+    }
+  };
+
+  const handleSelectMode = (mode: 'simple' | 'expert') => {
+    setReadingMode(mode);
+    try {
+      localStorage.setItem('meridian_reading_mode', mode);
+      localStorage.setItem('meridian_onboarding_completed', 'true');
+    } catch (e) {
+      console.error('Failed to persist reading mode', e);
+    }
   };
 
   // Login flow prior to onboarding
   if (!isAuthenticated) {
     return (
       <LoginView
-        onNext={(userData) => {
-          setUser(userData);
-          setIsAuthenticated(true);
-          setOnboardingOpen(true);
-        }}
+        onNext={handleLogin}
         isDark={isDark}
         onToggleTheme={toggleTheme}
       />
@@ -74,7 +156,7 @@ export default function App() {
         onOpenOnboarding={() => setOnboardingOpen(true)}
         readingMode={readingMode}
         user={user}
-        onLogout={() => setIsAuthenticated(false)}
+        onLogout={handleLogout}
         isDark={isDark}
         mobileOpen={mobileMenuOpen}
         onCloseMobile={() => setMobileMenuOpen(false)}
@@ -147,7 +229,7 @@ export default function App() {
         isDark={isDark}
         userName={user.name}
         selectedMode={readingMode}
-        onSelectMode={(mode) => setReadingMode(mode)}
+        onSelectMode={handleSelectMode}
       />
     </div>
   );

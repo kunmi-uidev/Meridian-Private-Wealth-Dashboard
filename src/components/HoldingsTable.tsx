@@ -75,14 +75,12 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({ isDark }) => {
                   }`}
                 >
                   {/* Holding Name */}
-                  <td className="py-4 sm:py-5 px-4 sm:px-6">
-                    <span
-                      className={`font-normal ${
-                        isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
-                      }`}
-                    >
-                      {row.name}
-                    </span>
+                  <td
+                    className={`py-4 sm:py-5 px-4 sm:px-6 font-medium sm:font-normal ${
+                      isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
+                    }`}
+                  >
+                    {row.name}
                   </td>
 
                   {/* Value */}
@@ -131,3 +129,4 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({ isDark }) => {
     </div>
   );
 };
+
