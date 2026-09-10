@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Icon } from '@iconify/react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, RotateCw } from 'lucide-react';
 import { motion } from 'motion/react';
 import { CountUpNumber } from './CountUpNumber';
 
@@ -172,6 +172,7 @@ function getDonutSlicePath(
 
 export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
   const [hoveredSlice, setHoveredSlice] = useState<string | null>(null);
+  const [isRotating, setIsRotating] = useState(true);
   const [expandedRowIds, setExpandedRowIds] = useState<Set<string>>(new Set());
 
   const toggleRow = (id: string) => {
@@ -418,7 +419,7 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
               : 'bg-white border-slate-200/80 shadow-xs'
           }`}
         >
-          <div>
+          <div className="flex items-center justify-between">
             <h2
               className={`text-sm sm:text-base font-medium tracking-tight ${
                 isDark ? 'text-white' : 'text-slate-900'
@@ -426,47 +427,86 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
             >
               Portfolio Allocation
             </h2>
+            <button
+              type="button"
+              onClick={() => setIsRotating((prev) => !prev)}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-normal transition-colors cursor-pointer ${
+                isRotating
+                  ? isDark
+                    ? 'bg-blue-950/60 text-blue-400 border border-blue-900/60'
+                    : 'bg-blue-50 text-blue-700 border border-blue-100'
+                  : isDark
+                  ? 'bg-slate-800 text-slate-400 border border-slate-700'
+                  : 'bg-slate-100 text-slate-600 border border-slate-200'
+              }`}
+              title={isRotating ? 'Click to pause rotation' : 'Click to resume rotation'}
+            >
+              <RotateCw className={`w-3.5 h-3.5 ${isRotating && !hoveredSlice ? 'animate-spin' : ''}`} style={{ animationDuration: '4s' }} />
+              <span>{isRotating ? 'Rotating' : 'Paused'}</span>
+            </button>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mt-3 sm:mt-4">
-            {/* Donut Chart SVG */}
-            <div className="relative w-40 h-40 sm:w-44 sm:h-44 flex items-center justify-center flex-shrink-0">
-              <svg viewBox="0 0 200 200" className="w-full h-full transform -rotate-90">
-                {DONUT_SEGMENTS.map((seg) => {
-                  const isHovered = hoveredSlice === seg.id;
-                  return (
-                    <path
-                      key={seg.id}
-                      d={getDonutSlicePath(
-                        100,
-                        100,
-                        isHovered ? 92 : 88,
-                        32,
-                        seg.startAngle,
-                        seg.endAngle
-                      )}
-                      fill={seg.color}
-                      className="transition-all duration-300 cursor-pointer"
-                      onMouseEnter={() => setHoveredSlice(seg.id)}
-                      onMouseLeave={() => setHoveredSlice(null)}
-                    />
-                  );
-                })}
-                {/* Center Circle Cutout */}
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="28"
-                  fill={isDark ? '#0f172a' : '#ffffff'}
-                  className="transition-colors duration-200"
-                />
-              </svg>
-            </div>
+            {/* Donut Chart SVG with continuous and entrance rotation */}
+            <motion.div
+              initial={{ scale: 0.85, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-40 h-40 sm:w-44 sm:h-44 flex items-center justify-center flex-shrink-0"
+            >
+              <div
+                className="w-full h-full flex items-center justify-center animate-spin-slow"
+                style={{
+                  animationPlayState: isRotating && !hoveredSlice ? 'running' : 'paused',
+                }}
+              >
+                <svg viewBox="0 0 200 200" className="w-full h-full transform -rotate-90">
+                  {DONUT_SEGMENTS.map((seg) => {
+                    const isHovered = hoveredSlice === seg.id;
+                    return (
+                      <path
+                        key={seg.id}
+                        d={getDonutSlicePath(
+                          100,
+                          100,
+                          isHovered ? 93 : 88,
+                          32,
+                          seg.startAngle,
+                          seg.endAngle
+                        )}
+                        fill={seg.color}
+                        className="transition-all duration-200 cursor-pointer"
+                        onMouseEnter={() => setHoveredSlice(seg.id)}
+                        onMouseLeave={() => setHoveredSlice(null)}
+                      />
+                    );
+                  })}
+                  {/* Center Circle Cutout */}
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="28"
+                    fill={isDark ? '#0f172a' : '#ffffff'}
+                    className="transition-colors duration-200"
+                  />
+                </svg>
+              </div>
+            </motion.div>
 
             {/* 2x2 Legend Metric Grid matching Kunmi3.png */}
             <div className="grid grid-cols-2 gap-x-6 sm:gap-x-8 gap-y-4 sm:gap-y-5 w-full">
               {/* Row 1 Col 1: Global Equities */}
-              <div className="flex flex-col">
+              <div
+                className={`flex flex-col p-1.5 -m-1.5 rounded-lg transition-colors cursor-pointer ${
+                  hoveredSlice === 'equities'
+                    ? isDark
+                      ? 'bg-slate-800/80 ring-1 ring-sky-500/40'
+                      : 'bg-sky-50/80 ring-1 ring-sky-300'
+                    : ''
+                }`}
+                onMouseEnter={() => setHoveredSlice('equities')}
+                onMouseLeave={() => setHoveredSlice(null)}
+              >
                 <span
                   className={`text-xs sm:text-sm font-normal ${
                     isDark ? 'text-slate-400' : 'text-slate-600'
@@ -484,7 +524,17 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
               </div>
 
               {/* Row 1 Col 2: Private Credit */}
-              <div className="flex flex-col">
+              <div
+                className={`flex flex-col p-1.5 -m-1.5 rounded-lg transition-colors cursor-pointer ${
+                  hoveredSlice === 'credit'
+                    ? isDark
+                      ? 'bg-slate-800/80 ring-1 ring-orange-500/40'
+                      : 'bg-orange-50/80 ring-1 ring-orange-300'
+                    : ''
+                }`}
+                onMouseEnter={() => setHoveredSlice('credit')}
+                onMouseLeave={() => setHoveredSlice(null)}
+              >
                 <span
                   className={`text-xs sm:text-sm font-normal ${
                     isDark ? 'text-slate-400' : 'text-slate-600'
@@ -502,7 +552,17 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
               </div>
 
               {/* Row 2 Col 1: Fixed Income */}
-              <div className="flex flex-col">
+              <div
+                className={`flex flex-col p-1.5 -m-1.5 rounded-lg transition-colors cursor-pointer ${
+                  hoveredSlice === 'income'
+                    ? isDark
+                      ? 'bg-slate-800/80 ring-1 ring-purple-500/40'
+                      : 'bg-purple-50/80 ring-1 ring-purple-300'
+                    : ''
+                }`}
+                onMouseEnter={() => setHoveredSlice('income')}
+                onMouseLeave={() => setHoveredSlice(null)}
+              >
                 <span
                   className={`text-xs sm:text-sm font-normal ${
                     isDark ? 'text-slate-400' : 'text-slate-600'
@@ -520,7 +580,17 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
               </div>
 
               {/* Row 2 Col 2: Cash */}
-              <div className="flex flex-col">
+              <div
+                className={`flex flex-col p-1.5 -m-1.5 rounded-lg transition-colors cursor-pointer ${
+                  hoveredSlice === 'cash'
+                    ? isDark
+                      ? 'bg-slate-800/80 ring-1 ring-lime-500/40'
+                      : 'bg-lime-50/80 ring-1 ring-lime-300'
+                    : ''
+                }`}
+                onMouseEnter={() => setHoveredSlice('cash')}
+                onMouseLeave={() => setHoveredSlice(null)}
+              >
                 <span
                   className={`text-xs sm:text-sm font-normal ${
                     isDark ? 'text-slate-400' : 'text-slate-600'
