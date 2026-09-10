@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Icon } from '@iconify/react';
+import { ChevronDown } from 'lucide-react';
 
 interface LiquidityViewProps {
   isDark: boolean;
@@ -97,43 +98,45 @@ const DONUT_SEGMENTS: DonutSegment[] = [
   },
 ];
 
-interface FeeHoldingRow {
+interface LiquidityHoldingRow {
   id: string;
   name: string;
-  feeRate: string;
   feePaid: string;
+  status: 'Daily' | 'Locked' | 'Quarterly';
+  explanation: string;
 }
 
-const HOLDINGS_FEES: FeeHoldingRow[] = [
+const LIQUIDITY_HOLDINGS: LiquidityHoldingRow[] = [
   {
-    id: 'h1',
-    name: 'Global Equity Fund (Managed — Diversified)',
-    feeRate: '0.85%',
-    feePaid: '$15,304',
+    id: 'lh1',
+    name: 'Global Stocks',
+    feePaid: '$1.80M',
+    status: 'Daily',
+    explanation:
+      'You can ask to take this money out whenever you like. It usually takes about 2 days to reach your account. No waiting periods.',
   },
   {
-    id: 'h2',
-    name: 'Private Credit Portfolio (illiquid — locked until 2028)',
-    feeRate: '1.95%',
-    feePaid: '$20,063',
+    id: 'lh2',
+    name: 'Business Loans',
+    feePaid: '$1.03M',
+    status: 'Locked',
+    explanation:
+      "This money is lent out to businesses, so it can't be taken out early — it's stuck until March 2028. In exchange for waiting, it's designed to earn more than money you can access right away.",
   },
   {
-    id: 'h3',
-    name: 'Fixed Income Ladder (Investment grade)',
-    feeRate: '0.55%',
+    id: 'lh3',
+    name: 'Safer Loans',
     feePaid: '$4,480',
+    status: 'Quarterly',
+    explanation:
+      'You can only take money out on set dates, about once every 3 months. The next date you can do this is 1 Oct 2026.',
   },
   {
-    id: 'h4',
-    name: 'Cash & Alternatives (Money market + hedges)',
-    feeRate: '0.00%',
-    feePaid: '$0',
-  },
-  {
-    id: 'h5',
-    name: 'Advisory & platform fee',
-    feeRate: '0.30%',
-    feePaid: '$13,093',
+    id: 'lh4',
+    name: 'Cash',
+    feePaid: '$643K',
+    status: 'Daily',
+    explanation: 'This is just cash. You can take it out any time, right away.',
   },
 ];
 
@@ -167,10 +170,23 @@ function getDonutSlicePath(
 
 export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
   const [hoveredSlice, setHoveredSlice] = useState<string | null>(null);
+  const [expandedRowIds, setExpandedRowIds] = useState<Set<string>>(new Set());
+
+  const toggleRow = (id: string) => {
+    setExpandedRowIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
 
   return (
     <div className="flex flex-col gap-5 sm:gap-6 w-full animate-in fade-in duration-200">
-      {/* Top 3 KPI Summary Cards matching Kunmi3.png */}
+      {/* Top 3 KPI Summary Cards matching the screenshot */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4 w-full">
         {/* Card 1: Available Now */}
         <div
@@ -197,7 +213,7 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
                 isDark ? 'text-white' : 'text-slate-900'
               }`}
             >
-              $2,700,000
+              $2,697,000
             </span>
 
             {/* Percentage Badge */}
@@ -214,11 +230,11 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
           </div>
 
           <div
-            className={`text-[11px] sm:text-xs mt-2.5 sm:mt-3 font-normal ${
+            className={`text-xs sm:text-[13px] mt-2.5 sm:mt-3 font-normal ${
               isDark ? 'text-slate-400' : 'text-[#808080]'
             }`}
           >
-            Last Month: $2,000,090
+            63% of Total Value
           </div>
         </div>
 
@@ -259,22 +275,22 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
               }`}
             >
               <span className="text-[9px] sm:text-[10px]">▲</span>
-              <span>30.16%</span>
+              <span>8.6%</span>
             </div>
           </div>
 
           <div
-            className={`text-[11px] sm:text-xs mt-2.5 sm:mt-3 font-normal ${
+            className={`text-xs sm:text-[13px] mt-2.5 sm:mt-3 font-normal ${
               isDark ? 'text-slate-400' : 'text-[#808080]'
             }`}
           >
-            Last Month: $3,289,090
+            Last Year: $3,942,764
           </div>
         </div>
 
-        {/* Card 3: YTD Return */}
+        {/* Card 3: This year's profit */}
         <div
-          id="kpi-ytd-return"
+          id="kpi-ytd-profit"
           className={`p-4 sm:p-5 rounded-2xl border transition-all duration-200 ${
             isDark
               ? 'bg-slate-900/80 border-slate-800'
@@ -287,7 +303,7 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
                 isDark ? 'text-slate-400' : 'text-[#808080]'
               }`}
             >
-              YTD Return
+              This year's profit
             </span>
           </div>
 
@@ -297,7 +313,7 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
                 isDark ? 'text-white' : 'text-slate-900'
               }`}
             >
-              7.9%
+              $338,196
             </span>
 
             {/* Percentage Badge */}
@@ -309,16 +325,16 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
               }`}
             >
               <span className="text-[9px] sm:text-[10px]">▲</span>
-              <span>1.8%</span>
+              <span>7.9%</span>
             </div>
           </div>
 
           <div
-            className={`text-[11px] sm:text-xs mt-2.5 sm:mt-3 font-normal ${
+            className={`text-xs sm:text-[13px] mt-2.5 sm:mt-3 font-normal ${
               isDark ? 'text-slate-400' : 'text-[#808080]'
             }`}
           >
-            $289,090 Increase
+            Last year: $240,510
           </div>
         </div>
       </div>
@@ -516,7 +532,7 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
         </div>
       </div>
 
-      {/* Bottom Table: Holdings Fee Rates & Paid matching Kunmi3.png */}
+      {/* Bottom Table: Holdings, Fee Paid, Status matching the screenshot */}
       <div
         id="liquidity-holdings-table-card"
         className={`rounded-2xl border transition-all duration-200 ${
@@ -536,60 +552,122 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
                     : 'border-slate-200/70 text-[#1e1e1e]'
                 }`}
               >
-                <th className="py-4 sm:py-5 px-4 sm:px-6 font-medium w-[58%]">
+                <th className="py-4 sm:py-5 px-4 sm:px-6 font-medium w-[54%]">
                   Holdings
                 </th>
-                <th className="py-4 sm:py-5 px-4 sm:px-6 font-medium w-[22%]">
-                  Fee Rate
-                </th>
-                <th className="py-4 sm:py-5 px-4 sm:px-6 font-medium w-[20%] text-right sm:text-left">
+                <th className="py-4 sm:py-5 px-4 sm:px-6 font-medium w-[24%]">
                   Fee Paid
+                </th>
+                <th className="py-4 sm:py-5 px-4 sm:px-6 font-medium w-[22%] pr-6 sm:pr-8">
+                  Status
                 </th>
               </tr>
             </thead>
 
             {/* Body */}
             <tbody className="text-xs sm:text-sm">
-              {HOLDINGS_FEES.map((row, index) => (
-                <tr
-                  key={row.id}
-                  id={`liquidity-holding-row-${row.id}`}
-                  className={`transition-colors ${
-                    index !== HOLDINGS_FEES.length - 1
-                      ? isDark
-                        ? 'border-b border-slate-800'
-                        : 'border-b border-slate-200/70'
-                      : ''
-                  } ${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50/50'}`}
-                >
-                  {/* Name */}
-                  <td
-                    className={`py-4 sm:py-5 px-4 sm:px-6 font-normal ${
-                      isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
-                    }`}
-                  >
-                    {row.name}
-                  </td>
+              {LIQUIDITY_HOLDINGS.map((row, index) => {
+                const isExpanded = expandedRowIds.has(row.id);
 
-                  {/* Fee Rate */}
-                  <td
-                    className={`py-4 sm:py-5 px-4 sm:px-6 font-normal ${
-                      isDark ? 'text-slate-400' : 'text-[#808080]'
+                return (
+                  <tr
+                    key={row.id}
+                    id={`liquidity-holding-row-${row.id}`}
+                    onClick={() => toggleRow(row.id)}
+                    className={`group transition-all duration-150 cursor-pointer select-none ${
+                      index !== LIQUIDITY_HOLDINGS.length - 1
+                        ? isDark
+                          ? 'border-b border-slate-800'
+                          : 'border-b border-slate-200/70'
+                        : ''
+                    } ${
+                      isDark
+                        ? 'hover:bg-slate-800/50 active:bg-slate-800/70'
+                        : 'hover:bg-slate-50/80 active:bg-slate-100/60'
+                    } ${
+                      isExpanded
+                        ? isDark
+                          ? 'bg-slate-800/30'
+                          : 'bg-blue-50/20'
+                        : ''
                     }`}
                   >
-                    {row.feeRate}
-                  </td>
+                    {/* Holding Name & Expandable Explanation */}
+                    <td className="py-4 sm:py-5 px-4 sm:px-6 align-top">
+                      <div className="flex flex-col">
+                        <span
+                          className={`font-normal text-xs sm:text-sm transition-colors duration-150 ${
+                            isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
+                          } group-hover:text-[#1D63ED] dark:group-hover:text-sky-400`}
+                        >
+                          {row.name}
+                        </span>
 
-                  {/* Fee Paid */}
-                  <td
-                    className={`py-4 sm:py-5 px-4 sm:px-6 font-normal text-right sm:text-left ${
-                      isDark ? 'text-slate-400' : 'text-[#808080]'
-                    }`}
-                  >
-                    {row.feePaid}
-                  </td>
-                </tr>
-              ))}
+                        {/* Explanation ONLY shown when row is clicked */}
+                        {isExpanded && (
+                          <p
+                            className={`text-[11px] sm:text-xs font-normal leading-relaxed mt-2 animate-in fade-in duration-200 ${
+                              isDark ? 'text-slate-400' : 'text-[#808080]'
+                            }`}
+                          >
+                            {row.explanation}
+                          </p>
+                        )}
+                      </div>
+                    </td>
+
+                    {/* Fee Paid */}
+                    <td
+                      className={`py-4 sm:py-5 px-4 sm:px-6 align-top font-normal ${
+                        isDark ? 'text-slate-400' : 'text-[#808080]'
+                      }`}
+                    >
+                      <span className="font-normal text-slate-700 dark:text-slate-300">
+                        {row.feePaid}
+                      </span>
+                    </td>
+
+                    {/* Status Badge + Chevron Icon */}
+                    <td className="py-4 sm:py-5 px-4 sm:px-6 pr-6 sm:pr-8 align-top font-normal">
+                      <div className="flex items-center justify-between">
+                        <span
+                          className={`inline-flex items-center px-3 py-0.5 rounded-full text-xs font-normal tracking-wide ${
+                            row.status === 'Daily'
+                              ? isDark
+                                ? 'bg-emerald-950/60 text-emerald-400'
+                                : 'bg-[#DCFCE7] text-[#15803D]'
+                              : row.status === 'Locked'
+                              ? isDark
+                                ? 'bg-rose-950/60 text-rose-400'
+                                : 'bg-[#FEE2E2] text-[#DC2626]'
+                              : isDark
+                              ? 'bg-amber-950/60 text-amber-400'
+                              : 'bg-[#FEF3C7] text-[#B45309]'
+                          }`}
+                        >
+                          {row.status}
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleRow(row.id);
+                          }}
+                          title={isExpanded ? `Collapse ${row.name}` : `Expand ${row.name}`}
+                          className="p-1 rounded-full hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-colors ml-2 cursor-pointer text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300"
+                        >
+                          <ChevronDown
+                            className={`w-4 h-4 transition-transform duration-200 ${
+                              isExpanded ? 'rotate-180 text-[#1D63ED] dark:text-sky-400' : ''
+                            }`}
+                          />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

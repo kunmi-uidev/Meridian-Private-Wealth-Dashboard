@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { PERFORMANCE_MONTHS } from '../data';
+import { PERFORMANCE_MONTHS, PERFORMANCE_MONTHS_SIMPLE } from '../data';
 
 interface AssetPerformanceChartProps {
   isDark: boolean;
+  readingMode?: 'simple' | 'expert' | null;
 }
 
 export const AssetPerformanceChart: React.FC<AssetPerformanceChartProps> = ({
   isDark,
+  readingMode,
 }) => {
   const [selectedTimeframe, setSelectedTimeframe] = useState('1 Month');
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -15,10 +17,14 @@ export const AssetPerformanceChart: React.FC<AssetPerformanceChartProps> = ({
     month: string;
     col: number;
     row: number;
+    tooltipText?: string;
+    hexColor?: string;
     label?: string;
     value?: string;
   } | null>(null);
 
+  const isSimple = readingMode === 'simple';
+  const data = isSimple ? PERFORMANCE_MONTHS_SIMPLE : PERFORMANCE_MONTHS;
   const timeframes = ['1 Month', '3 Months', '6 Months', 'YTD', '1 Year', 'All'];
 
   return (
@@ -56,7 +62,7 @@ export const AssetPerformanceChart: React.FC<AssetPerformanceChartProps> = ({
               }`}
             >
               <span className="text-[10px]">▲</span>
-              <span>30.16%</span>
+              <span>{isSimple ? '8.6%' : '30.16%'}</span>
             </div>
           </div>
         </div>
@@ -107,21 +113,38 @@ export const AssetPerformanceChart: React.FC<AssetPerformanceChartProps> = ({
 
       {/* Visual Block Histogram Grid */}
       <div className="mt-8 relative">
+        {/* Helper Note when idle in simple mode */}
+        {!hoveredBlock && isSimple && (
+          <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-[11px] text-slate-400 dark:text-slate-500 font-normal whitespace-nowrap pointer-events-none">
+            Hover over any block to view monthly asset earnings
+          </div>
+        )}
+
         {/* Tooltip Overlay */}
         {hoveredBlock && (
-          <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[11px] font-medium px-2.5 py-1 rounded-md shadow-md pointer-events-none z-10 whitespace-nowrap">
-            {hoveredBlock.label ? (
-              <span>
-                <strong className="text-blue-300">{hoveredBlock.label}</strong>: {hoveredBlock.value} ({hoveredBlock.month})
-              </span>
-            ) : (
-              <span>Standard Distribution ({hoveredBlock.month})</span>
+          <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 dark:bg-slate-800 text-white text-xs font-medium px-3.5 py-1.5 rounded-lg shadow-lg pointer-events-none z-20 whitespace-nowrap border border-slate-700/60 flex items-center gap-2">
+            {hoveredBlock.hexColor && (
+              <span
+                className="w-2.5 h-2.5 rounded-xs flex-shrink-0 shadow-xs"
+                style={{ backgroundColor: hoveredBlock.hexColor }}
+              />
             )}
+            <span>
+              {hoveredBlock.tooltipText || (
+                hoveredBlock.label ? (
+                  <>
+                    <strong className="text-blue-300">{hoveredBlock.label}</strong>: {hoveredBlock.value} ({hoveredBlock.month})
+                  </>
+                ) : (
+                  `Standard Distribution (${hoveredBlock.month})`
+                )
+              )}
+            </span>
           </div>
         )}
 
         <div className="flex items-end justify-between gap-2 sm:gap-4 overflow-x-auto pb-1 pt-4">
-          {PERFORMANCE_MONTHS.map((monthGroup, mIdx) => (
+          {data.map((monthGroup, mIdx) => (
             <div
               key={monthGroup.month}
               className="flex flex-col items-center flex-1 min-w-[70px]"
@@ -142,11 +165,14 @@ export const AssetPerformanceChart: React.FC<AssetPerformanceChartProps> = ({
                       return (
                         <div
                           key={rIdx}
+                          title={block.tooltipText || (block.label ? `${block.label}: ${block.value}` : monthGroup.month)}
                           onMouseEnter={() =>
                             setHoveredBlock({
                               month: monthGroup.month,
                               col: cIdx,
                               row: rIdx,
+                              tooltipText: block.tooltipText,
+                              hexColor: block.hexColor,
                               label: block.label,
                               value: block.value,
                             })
@@ -159,7 +185,7 @@ export const AssetPerformanceChart: React.FC<AssetPerformanceChartProps> = ({
                               ? 'bg-slate-700/80 hover:bg-slate-600'
                               : 'hover:brightness-110'
                           } ${
-                            isHovered ? 'scale-125 z-10 shadow-sm ring-1 ring-white/50' : ''
+                            isHovered ? 'scale-125 z-10 shadow-sm ring-2 ring-white/80 dark:ring-white/50' : ''
                           }`}
                         />
                       );

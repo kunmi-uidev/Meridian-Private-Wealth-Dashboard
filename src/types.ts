@@ -1,6 +1,8 @@
 export interface HoldingItem {
   id: string;
   name: string;
+  simpleName?: string;
+  description?: string;
   category: string;
   value: number;
   valueFormatted: string;
@@ -19,6 +21,7 @@ export interface AllocationItem {
   barClass: string;
   railColor: string;
   textColor: string;
+  borderColor?: string;
 }
 
 export interface MonthData {
@@ -29,6 +32,8 @@ export interface MonthData {
       color: string;
       label?: string;
       value?: string;
+      tooltipText?: string;
+      hexColor?: string;
     }[];
   }[];
 }

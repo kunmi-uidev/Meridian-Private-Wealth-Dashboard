@@ -1,11 +1,34 @@
-import React from 'react';
-import { HOLDINGS } from '../data';
+import React, { useState } from 'react';
+import { Info } from 'lucide-react';
+import { HOLDINGS, HOLDINGS_SIMPLE } from '../data';
 
 interface HoldingsTableProps {
   isDark: boolean;
+  readingMode?: 'simple' | 'expert' | null;
 }
 
-export const HoldingsTable: React.FC<HoldingsTableProps> = ({ isDark }) => {
+export const HoldingsTable: React.FC<HoldingsTableProps> = ({
+  isDark,
+  readingMode,
+}) => {
+  const isSimple = readingMode === 'simple';
+  const holdings = isSimple ? HOLDINGS_SIMPLE : HOLDINGS;
+
+  // Track expanded rows individually by id
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+  const toggleRow = (id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
   return (
     <div
       id="holdings-table-card"
@@ -27,30 +50,30 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({ isDark }) => {
               }`}
             >
               <th
-                className={`py-4 sm:py-5 px-4 sm:px-6 font-medium w-[44%] ${
-                  isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
-                }`}
+                className={`py-4 sm:py-5 px-4 sm:px-6 font-medium ${
+                  isSimple ? 'w-[48%]' : 'w-[44%]'
+                } ${isDark ? 'text-slate-200' : 'text-[#1e1e1e]'}`}
               >
-                Holdings & Strategy
+                {isSimple ? 'Holdings' : 'Holdings & Strategy'}
               </th>
               <th
-                className={`py-4 sm:py-5 px-4 sm:px-6 font-medium w-[20%] ${
-                  isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
-                }`}
+                className={`py-4 sm:py-5 px-4 sm:px-6 font-medium ${
+                  isSimple ? 'w-[18%]' : 'w-[20%]'
+                } ${isDark ? 'text-slate-200' : 'text-[#1e1e1e]'}`}
               >
                 Value
               </th>
               <th
-                className={`py-4 sm:py-5 px-4 sm:px-6 font-medium w-[16%] ${
-                  isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
-                }`}
+                className={`py-4 sm:py-5 px-4 sm:px-6 font-medium ${
+                  isSimple ? 'w-[14%]' : 'w-[16%]'
+                } ${isDark ? 'text-slate-200' : 'text-[#1e1e1e]'}`}
               >
                 Weight
               </th>
               <th
-                className={`py-4 sm:py-5 px-4 sm:px-6 font-medium w-[20%] ${
-                  isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
-                }`}
+                className={`py-4 sm:py-5 px-4 sm:px-6 font-medium ${
+                  isSimple ? 'w-[20%]' : 'w-[20%]'
+                } ${isDark ? 'text-slate-200' : 'text-[#1e1e1e]'}`}
               >
                 Change (QTD)
               </th>
@@ -59,28 +82,70 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({ isDark }) => {
 
           {/* Body */}
           <tbody className="text-xs sm:text-sm">
-            {HOLDINGS.map((row, index) => {
+            {holdings.map((row, index) => {
+              const isExpanded = expandedIds.has(row.id);
+
               return (
                 <tr
                   key={row.id}
                   id={`holding-row-${row.id}`}
-                  className={`transition-colors ${
-                    index !== HOLDINGS.length - 1
+                  onClick={() => {
+                    if (isSimple) {
+                      toggleRow(row.id);
+                    }
+                  }}
+                  className={`group transition-all duration-150 select-none ${
+                    isSimple ? 'cursor-pointer' : ''
+                  } ${
+                    index !== holdings.length - 1
                       ? isDark
                         ? 'border-b border-slate-800'
                         : 'border-b border-slate-200/70'
                       : ''
                   } ${
-                    isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50/50'
+                    isDark
+                      ? isSimple
+                        ? 'hover:bg-slate-800/60 active:bg-slate-800/80'
+                        : 'hover:bg-slate-800/40'
+                      : isSimple
+                      ? 'hover:bg-slate-50/90 active:bg-slate-100/70'
+                      : 'hover:bg-slate-50/70'
+                  } ${
+                    isSimple && isExpanded
+                      ? isDark
+                        ? 'bg-slate-800/25'
+                        : 'bg-blue-50/20'
+                      : ''
                   }`}
                 >
-                  {/* Holding Name */}
-                  <td
-                    className={`py-4 sm:py-5 px-4 sm:px-6 font-medium sm:font-normal ${
-                      isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
-                    }`}
-                  >
-                    {row.name}
+                  {/* Holding Name & Description */}
+                  <td className="py-4 sm:py-5 px-4 sm:px-6">
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`font-medium sm:font-normal text-xs sm:text-sm transition-colors duration-150 ${
+                            isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
+                          } ${
+                            isSimple
+                              ? 'group-hover:text-[#1D63ED] dark:group-hover:text-sky-400 group-hover:font-medium'
+                              : ''
+                          }`}
+                        >
+                          {isSimple ? row.simpleName || row.name : row.name}
+                        </span>
+                      </div>
+
+                      {/* Simple Mode Plain-English Subtitle (Only opens for expanded row) */}
+                      {isSimple && isExpanded && row.description && (
+                        <span
+                          className={`text-[11px] sm:text-xs mt-1.5 leading-relaxed font-normal transition-opacity duration-200 ${
+                            isDark ? 'text-slate-400' : 'text-[#808080]'
+                          }`}
+                        >
+                          {row.description}
+                        </span>
+                      )}
+                    </div>
                   </td>
 
                   {/* Value */}
@@ -101,23 +166,53 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({ isDark }) => {
                     {row.weightFormatted}
                   </td>
 
-                  {/* Change (QTD) Badge */}
+                  {/* Change (QTD) Badge + Info Icon */}
                   <td className="py-4 sm:py-5 px-4 sm:px-6">
-                    <div
-                      className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md text-[11px] sm:text-xs font-medium ${
-                        row.isPositive
-                          ? isDark
-                            ? 'bg-emerald-950/60 text-emerald-400'
-                            : 'bg-[#E7F8EC] text-[#16A34A]'
-                          : isDark
-                          ? 'bg-rose-950/60 text-rose-400'
-                          : 'bg-[#FEECEB] text-[#DC2626]'
-                      }`}
-                    >
-                      <span className="text-[8px] sm:text-[9px] leading-none">
-                        {row.isPositive ? '▲' : '▼'}
-                      </span>
-                      <span>{row.changeQtdFormatted}</span>
+                    <div className="flex items-center justify-between gap-3">
+                      <div
+                        className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md text-[11px] sm:text-xs font-medium transition-transform duration-150 ${
+                          isSimple ? 'group-hover:scale-[1.03]' : ''
+                        } ${
+                          row.isPositive
+                            ? isDark
+                              ? 'bg-emerald-950/60 text-emerald-400'
+                              : 'bg-[#E7F8EC] text-[#16A34A]'
+                            : isDark
+                            ? 'bg-rose-950/60 text-rose-400'
+                            : 'bg-[#FEECEB] text-[#DC2626]'
+                        }`}
+                      >
+                        <span className="text-[8px] sm:text-[9px] leading-none">
+                          {row.isPositive ? '▲' : '▼'}
+                        </span>
+                        <span>{row.changeQtdFormatted}</span>
+                      </div>
+
+                      {/* Info Icon Button (Simple Mode) */}
+                      {isSimple && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleRow(row.id);
+                          }}
+                          title={
+                            isExpanded
+                              ? `Click to hide ${row.name} details`
+                              : `Click to view ${row.name} details`
+                          }
+                          aria-label={`Toggle ${row.name} details`}
+                          className="p-1 rounded-full transition-all duration-150 flex items-center justify-center cursor-pointer focus:outline-hidden hover:bg-slate-200/60 dark:hover:bg-slate-700/60 group-hover:scale-110"
+                        >
+                          <Info
+                            className={`w-4 h-4 sm:w-4.5 sm:h-4.5 transition-colors duration-150 ${
+                              isExpanded
+                                ? 'text-[#1D63ED] dark:text-sky-400'
+                                : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300'
+                            }`}
+                          />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -129,4 +224,5 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({ isDark }) => {
     </div>
   );
 };
+
 

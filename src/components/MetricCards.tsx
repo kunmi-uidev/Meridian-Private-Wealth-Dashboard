@@ -1,14 +1,17 @@
 import React from 'react';
-import { KPI_CARDS } from '../data';
+import { KPI_CARDS, KPI_CARDS_SIMPLE } from '../data';
 
 interface MetricCardsProps {
   isDark: boolean;
+  readingMode?: 'simple' | 'expert' | null;
 }
 
-export const MetricCards: React.FC<MetricCardsProps> = ({ isDark }) => {
+export const MetricCards: React.FC<MetricCardsProps> = ({ isDark, readingMode = 'simple' }) => {
+  const cards = readingMode === 'expert' ? KPI_CARDS : KPI_CARDS_SIMPLE;
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 w-full">
-      {KPI_CARDS.map((card) => {
+      {cards.map((card) => {
         return (
           <div
             key={card.id}
@@ -71,4 +74,5 @@ export const MetricCards: React.FC<MetricCardsProps> = ({ isDark }) => {
     </div>
   );
 };
+
 

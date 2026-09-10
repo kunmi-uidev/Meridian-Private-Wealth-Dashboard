@@ -182,22 +182,22 @@ export default function App() {
 
           {/* Tab Content Switching */}
           {activeTab === 'Fees' ? (
-            <FeesView isDark={isDark} />
+            <FeesView isDark={isDark} readingMode={readingMode} />
           ) : activeTab === 'Liquidity' ? (
             <LiquidityView isDark={isDark} />
           ) : (
             <>
               {/* Top 4 KPI Summary Cards */}
-              <MetricCards isDark={isDark} />
+              <MetricCards isDark={isDark} readingMode={readingMode} />
 
               {/* Middle Row: Asset Performance + Portfolio Allocation */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 items-stretch">
-                <AssetPerformanceChart isDark={isDark} />
-                <PortfolioAllocation isDark={isDark} />
+                <AssetPerformanceChart isDark={isDark} readingMode={readingMode} />
+                <PortfolioAllocation isDark={isDark} readingMode={readingMode} />
               </div>
 
               {/* Bottom Table: Holdings */}
-              <HoldingsTable isDark={isDark} />
+              <HoldingsTable isDark={isDark} readingMode={readingMode} />
             </>
           )}
         </div>

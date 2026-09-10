@@ -1,13 +1,18 @@
 import React from 'react';
-import { ALLOCATIONS } from '../data';
+import { ALLOCATIONS, ALLOCATIONS_SIMPLE } from '../data';
 
 interface PortfolioAllocationProps {
   isDark: boolean;
+  readingMode?: 'simple' | 'expert' | null;
 }
 
 export const PortfolioAllocation: React.FC<PortfolioAllocationProps> = ({
   isDark,
+  readingMode,
 }) => {
+  const isSimple = readingMode === 'simple';
+  const allocations = isSimple ? ALLOCATIONS_SIMPLE : ALLOCATIONS;
+
   return (
     <div
       id="portfolio-allocation-card"
@@ -30,13 +35,13 @@ export const PortfolioAllocation: React.FC<PortfolioAllocationProps> = ({
 
       {/* Allocation Rows */}
       <div className="flex flex-col gap-3.5 sm:gap-4 mt-3.5 sm:mt-4">
-        {ALLOCATIONS.map((item) => (
+        {allocations.map((item) => (
           <div key={item.id} className="flex flex-col gap-1.5">
             {/* Header: Name and Amount */}
             <div className="flex items-center justify-between text-xs sm:text-sm">
               <span
                 className={`font-normal truncate pr-2 ${
-                  isDark ? 'text-slate-300' : 'text-slate-700'
+                  isDark ? 'text-slate-400' : 'text-[#808080]'
                 }`}
               >
                 {item.name}
@@ -52,16 +57,26 @@ export const PortfolioAllocation: React.FC<PortfolioAllocationProps> = ({
 
             {/* Custom Track & Striped Bar */}
             <div
-              className={`relative w-full h-4 sm:h-5 rounded-md overflow-hidden ${
+              className={`relative w-full ${
+                isSimple ? 'h-5 sm:h-6 rounded-lg' : 'h-4 sm:h-5 rounded-md'
+              } overflow-hidden ${
                 isDark ? 'bg-slate-800/80' : item.railColor
               } flex items-center`}
             >
               <div
-                className={`h-full ${item.barClass} rounded-l-md relative transition-all duration-500`}
+                className={`h-full ${item.barClass} ${
+                  isSimple ? 'rounded-l-lg' : 'rounded-l-md'
+                } relative transition-all duration-500`}
                 style={{ width: `${item.percentage}%` }}
               >
-                {/* Rounded End Cap with subtle indicator border */}
-                <div className="absolute right-0 top-0.5 bottom-0.5 w-1.5 bg-white/90 rounded-sm shadow-xs" />
+                {/* Rounded End Cap with distinct slider handle */}
+                <div
+                  className={`absolute right-1 top-0.5 bottom-0.5 ${
+                    isSimple ? 'w-1.5 sm:w-2 rounded-full border' : 'w-1.5 rounded-xs'
+                  } bg-white shadow-xs ${
+                    item.borderColor || (isDark ? 'border-white/60' : 'border-slate-300')
+                  }`}
+                />
               </div>
             </div>
           </div>
