@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'motion/react';
 import { ALLOCATIONS, ALLOCATIONS_SIMPLE } from '../data';
 
 interface PortfolioAllocationProps {
@@ -35,7 +36,7 @@ export const PortfolioAllocation: React.FC<PortfolioAllocationProps> = ({
 
       {/* Allocation Rows */}
       <div className="flex flex-col gap-3.5 sm:gap-4 mt-3.5 sm:mt-4">
-        {allocations.map((item) => (
+        {allocations.map((item, idx) => (
           <div key={item.id} className="flex flex-col gap-1.5">
             {/* Header: Name and Amount */}
             <div className="flex items-center justify-between text-xs sm:text-sm">
@@ -63,11 +64,18 @@ export const PortfolioAllocation: React.FC<PortfolioAllocationProps> = ({
                 isDark ? 'bg-slate-800/80' : item.railColor
               } flex items-center`}
             >
-              <div
+              <motion.div
+                key={`${readingMode}-${item.id}`}
+                initial={{ width: '0%' }}
+                animate={{ width: `${item.percentage}%` }}
+                transition={{
+                  duration: 1.0,
+                  delay: 0.12 + idx * 0.14,
+                  ease: [0.16, 1.15, 0.3, 1], // pulled like someone dragged the slider handle
+                }}
                 className={`h-full ${item.barClass} ${
                   isSimple ? 'rounded-l-lg' : 'rounded-l-md'
-                } relative transition-all duration-500`}
-                style={{ width: `${item.percentage}%` }}
+                } relative`}
               >
                 {/* Rounded End Cap with distinct slider handle */}
                 <div
@@ -77,7 +85,7 @@ export const PortfolioAllocation: React.FC<PortfolioAllocationProps> = ({
                     item.borderColor || (isDark ? 'border-white/60' : 'border-slate-300')
                   }`}
                 />
-              </div>
+              </motion.div>
             </div>
           </div>
         ))}

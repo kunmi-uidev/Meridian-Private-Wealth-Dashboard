@@ -1,5 +1,6 @@
 import React from 'react';
 import { KPI_CARDS, KPI_CARDS_SIMPLE } from '../data';
+import { CountUpNumber } from './CountUpNumber';
 
 interface MetricCardsProps {
   isDark: boolean;
@@ -38,7 +39,7 @@ export const MetricCards: React.FC<MetricCardsProps> = ({ isDark, readingMode = 
                   isDark ? 'text-white' : 'text-slate-900'
                 }`}
               >
-                {card.value}
+                <CountUpNumber value={card.value} />
               </span>
 
               {/* Percentage Badge */}

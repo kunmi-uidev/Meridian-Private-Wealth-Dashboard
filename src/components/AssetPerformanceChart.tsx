@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { motion } from 'motion/react';
 import { PERFORMANCE_MONTHS, PERFORMANCE_MONTHS_SIMPLE } from '../data';
+import { CountUpNumber } from './CountUpNumber';
 
 interface AssetPerformanceChartProps {
   isDark: boolean;
@@ -52,7 +54,7 @@ export const AssetPerformanceChart: React.FC<AssetPerformanceChartProps> = ({
                 isDark ? 'text-white' : 'text-slate-900'
               }`}
             >
-              $4,280,960
+              <CountUpNumber value="$4,280,960" />
             </span>
             <div
               className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium ${
@@ -62,7 +64,7 @@ export const AssetPerformanceChart: React.FC<AssetPerformanceChartProps> = ({
               }`}
             >
               <span className="text-[10px]">▲</span>
-              <span>{isSimple ? '8.6%' : '30.16%'}</span>
+              <span>8.6%</span>
             </div>
           </div>
         </div>
@@ -143,7 +145,10 @@ export const AssetPerformanceChart: React.FC<AssetPerformanceChartProps> = ({
           </div>
         )}
 
-        <div className="flex items-end justify-between gap-2 sm:gap-4 overflow-x-auto pb-1 pt-4">
+        <div
+          key={`${selectedTimeframe}-${readingMode}`}
+          className="flex items-end justify-between gap-2 sm:gap-4 overflow-x-auto pb-1 pt-4"
+        >
           {data.map((monthGroup, mIdx) => (
             <div
               key={monthGroup.month}
@@ -162,9 +167,18 @@ export const AssetPerformanceChart: React.FC<AssetPerformanceChartProps> = ({
                         hoveredBlock?.col === cIdx &&
                         hoveredBlock?.row === rIdx;
 
+                      const delay = mIdx * 0.07 + cIdx * 0.02 + rIdx * 0.05;
+
                       return (
-                        <div
+                        <motion.div
                           key={rIdx}
+                          initial={{ opacity: 0, y: 16, scale: 0.6 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          transition={{
+                            duration: 0.32,
+                            delay,
+                            ease: [0.34, 1.35, 0.64, 1],
+                          }}
                           title={block.tooltipText || (block.label ? `${block.label}: ${block.value}` : monthGroup.month)}
                           onMouseEnter={() =>
                             setHoveredBlock({
@@ -178,7 +192,7 @@ export const AssetPerformanceChart: React.FC<AssetPerformanceChartProps> = ({
                             })
                           }
                           onMouseLeave={() => setHoveredBlock(null)}
-                          className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-xs transition-all duration-150 cursor-pointer ${
+                          className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-xs transition-colors duration-150 cursor-pointer ${
                             block.color
                           } ${
                             isDark && block.color === 'bg-slate-200'

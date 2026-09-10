@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { ChevronDown } from 'lucide-react';
+import { motion } from 'motion/react';
+import { CountUpNumber } from './CountUpNumber';
 
 interface LiquidityViewProps {
   isDark: boolean;
@@ -213,7 +215,7 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
                 isDark ? 'text-white' : 'text-slate-900'
               }`}
             >
-              $2,697,000
+              <CountUpNumber value="$2,697,000" />
             </span>
 
             {/* Percentage Badge */}
@@ -263,7 +265,7 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
                 isDark ? 'text-white' : 'text-slate-900'
               }`}
             >
-              $4,280,960
+              <CountUpNumber value="$4,280,960" />
             </span>
 
             {/* Percentage Badge */}
@@ -313,7 +315,7 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
                 isDark ? 'text-white' : 'text-slate-900'
               }`}
             >
-              $338,196
+              <CountUpNumber value="$338,196" />
             </span>
 
             {/* Percentage Badge */}
@@ -361,7 +363,7 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
           </div>
 
           <div className="flex flex-col gap-4 sm:gap-5 mt-4 sm:mt-5">
-            {LIQUIDITY_ALLOCATIONS.map((item) => (
+            {LIQUIDITY_ALLOCATIONS.map((item, idx) => (
               <div key={item.id} className="flex flex-col gap-1.5">
                 {/* Label & Amount */}
                 <div className="flex items-center justify-between text-xs sm:text-sm">
@@ -387,13 +389,20 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
                     isDark ? 'bg-slate-800/80' : item.railColor
                   } flex items-center`}
                 >
-                  <div
-                    className={`h-full ${item.barClass} rounded-l-md relative transition-all duration-500`}
-                    style={{ width: `${item.percentage}%` }}
+                  <motion.div
+                    key={item.id}
+                    initial={{ width: '0%' }}
+                    animate={{ width: `${item.percentage}%` }}
+                    transition={{
+                      duration: 1.0,
+                      delay: 0.12 + idx * 0.14,
+                      ease: [0.16, 1.15, 0.3, 1],
+                    }}
+                    className={`h-full ${item.barClass} rounded-l-md relative`}
                   >
                     {/* Vertical marker on the edge */}
                     <div className="absolute right-0 top-0.5 bottom-0.5 w-1.5 bg-white/90 rounded-sm shadow-xs" />
-                  </div>
+                  </motion.div>
                 </div>
               </div>
             ))}
