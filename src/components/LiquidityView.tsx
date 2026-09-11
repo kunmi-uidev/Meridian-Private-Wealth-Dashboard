@@ -6,6 +6,7 @@ import { CountUpNumber } from './CountUpNumber';
 
 interface LiquidityViewProps {
   isDark: boolean;
+  onNavigate?: (screen: string) => void;
 }
 
 interface AllocationRow {
@@ -170,7 +171,7 @@ function getDonutSlicePath(
   return `M ${x1} ${y1} A ${rOuter} ${rOuter} 0 ${largeArc} 1 ${x2} ${y2} L ${x3} ${y3} A ${rInner} ${rInner} 0 ${largeArc} 0 ${x4} ${y4} Z`;
 }
 
-export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
+export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark, onNavigate }) => {
   const [hoveredSlice, setHoveredSlice] = useState<string | null>(null);
   const [expandedRowIds, setExpandedRowIds] = useState<Set<string>>(new Set());
 
@@ -363,25 +364,34 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
           </div>
 
           <div className="flex flex-col gap-4 sm:gap-5 mt-4 sm:mt-5">
-            {LIQUIDITY_ALLOCATIONS.map((item, idx) => (
-              <div key={item.id} className="flex flex-col gap-1.5">
-                {/* Label & Amount */}
-                <div className="flex items-center justify-between text-xs sm:text-sm">
-                  <span
-                    className={`font-normal ${
-                      isDark ? 'text-slate-300' : 'text-slate-700'
-                    }`}
-                  >
-                    {item.name}
-                  </span>
-                  <span
-                    className={`font-medium ${
-                      isDark ? 'text-slate-100' : 'text-slate-900'
-                    }`}
-                  >
-                    {item.amount}
-                  </span>
-                </div>
+            {LIQUIDITY_ALLOCATIONS.map((item, idx) => {
+              const isNavigable = item.name === 'Global Equities' || item.name === 'Private Credit';
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => {
+                    if (item.name === 'Global Equities') onNavigate?.('Global Stocks');
+                    if (item.name === 'Private Credit') onNavigate?.('Business Loans');
+                  }}
+                  className={`flex flex-col gap-1.5 ${isNavigable ? 'cursor-pointer group' : ''}`}
+                >
+                  {/* Label & Amount */}
+                  <div className="flex items-center justify-between text-xs sm:text-sm">
+                    <span
+                      className={`font-normal transition-colors ${
+                        isDark ? 'text-slate-300' : 'text-slate-700'
+                      } ${isNavigable ? 'group-hover:text-[#1D63ED] dark:group-hover:text-sky-400' : ''}`}
+                    >
+                      {item.name}
+                    </span>
+                    <span
+                      className={`font-medium ${
+                        isDark ? 'text-slate-100' : 'text-slate-900'
+                      }`}
+                    >
+                      {item.amount}
+                    </span>
+                  </div>
 
                 {/* Striped Track Bar */}
                 <div
@@ -405,7 +415,8 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
                   </motion.div>
                 </div>
               </div>
-            ))}
+            );
+          })}
           </div>
         </div>
 
@@ -478,18 +489,19 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
             <div className="grid grid-cols-2 gap-x-6 sm:gap-x-8 gap-y-4 sm:gap-y-5 w-full">
               {/* Row 1 Col 1: Global Equities */}
               <div
-                className={`flex flex-col p-1.5 -m-1.5 rounded-lg transition-colors cursor-pointer ${
+                className={`flex flex-col p-1.5 -m-1.5 rounded-lg transition-colors cursor-pointer group ${
                   hoveredSlice === 'equities'
                     ? isDark
                       ? 'bg-slate-800/80 ring-1 ring-sky-500/40'
                       : 'bg-sky-50/80 ring-1 ring-sky-300'
                     : ''
                 }`}
+                onClick={() => onNavigate?.('Global Stocks')}
                 onMouseEnter={() => setHoveredSlice('equities')}
                 onMouseLeave={() => setHoveredSlice(null)}
               >
                 <span
-                  className={`text-xs sm:text-sm font-normal ${
+                  className={`text-xs sm:text-sm font-normal group-hover:text-[#1D63ED] dark:group-hover:text-sky-400 transition-colors ${
                     isDark ? 'text-slate-400' : 'text-slate-600'
                   }`}
                 >
@@ -506,18 +518,19 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
 
               {/* Row 1 Col 2: Private Credit */}
               <div
-                className={`flex flex-col p-1.5 -m-1.5 rounded-lg transition-colors cursor-pointer ${
+                className={`flex flex-col p-1.5 -m-1.5 rounded-lg transition-colors cursor-pointer group ${
                   hoveredSlice === 'credit'
                     ? isDark
                       ? 'bg-slate-800/80 ring-1 ring-orange-500/40'
                       : 'bg-orange-50/80 ring-1 ring-orange-300'
                     : ''
                 }`}
+                onClick={() => onNavigate?.('Business Loans')}
                 onMouseEnter={() => setHoveredSlice('credit')}
                 onMouseLeave={() => setHoveredSlice(null)}
               >
                 <span
-                  className={`text-xs sm:text-sm font-normal ${
+                  className={`text-xs sm:text-sm font-normal group-hover:text-[#1D63ED] dark:group-hover:text-sky-400 transition-colors ${
                     isDark ? 'text-slate-400' : 'text-slate-600'
                   }`}
                 >
@@ -628,12 +641,21 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
             <tbody className="text-xs sm:text-sm">
               {LIQUIDITY_HOLDINGS.map((row, index) => {
                 const isExpanded = expandedRowIds.has(row.id);
+                const isDirectNav = row.name === 'Global Stocks' || row.name === 'Business Loans';
 
                 return (
                   <tr
                     key={row.id}
                     id={`liquidity-holding-row-${row.id}`}
-                    onClick={() => toggleRow(row.id)}
+                    onClick={() => {
+                      if (row.name === 'Global Stocks') {
+                        onNavigate?.('Global Stocks');
+                      } else if (row.name === 'Business Loans') {
+                        onNavigate?.('Business Loans');
+                      } else {
+                        toggleRow(row.id);
+                      }
+                    }}
                     className={`group transition-all duration-150 cursor-pointer select-none ${
                       index !== LIQUIDITY_HOLDINGS.length - 1
                         ? isDark
@@ -655,13 +677,20 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark }) => {
                     {/* Holding Name & Expandable Explanation */}
                     <td className="py-4 sm:py-5 px-4 sm:px-6 align-top">
                       <div className="flex flex-col">
-                        <span
-                          className={`font-normal text-xs sm:text-sm transition-colors duration-150 ${
-                            isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
-                          } group-hover:text-[#1D63ED] dark:group-hover:text-sky-400`}
-                        >
-                          {row.name}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`font-normal text-xs sm:text-sm transition-colors duration-150 ${
+                              isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
+                            } group-hover:text-[#1D63ED] dark:group-hover:text-sky-400`}
+                          >
+                            {row.name}
+                          </span>
+                          {isDirectNav && (
+                            <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-[#1D63ED] dark:text-sky-400 font-medium">
+                              View breakdown →
+                            </span>
+                          )}
+                        </div>
 
                         {/* Explanation ONLY shown when row is clicked */}
                         {isExpanded && (

@@ -12,6 +12,8 @@ import { PortfolioAllocation } from './components/PortfolioAllocation';
 import { HoldingsTable } from './components/HoldingsTable';
 import { FeesView } from './components/FeesView';
 import { LiquidityView } from './components/LiquidityView';
+import { GlobalStocksView } from './components/GlobalStocksView';
+import { BusinessLoansView } from './components/BusinessLoansView';
 import { AdvisorModal } from './components/AdvisorModal';
 import { ScheduleAuditModal } from './components/ScheduleAuditModal';
 import { SettingsModal } from './components/SettingsModal';
@@ -135,6 +137,16 @@ export default function App() {
     );
   }
 
+  const handleNavigate = (view: string) => {
+    if (view === 'Global Stocks' || view === 'Business Loans') {
+      setActiveTab(view);
+      setActiveNav('Liquidity');
+    } else {
+      setActiveTab(view);
+      setActiveNav(view);
+    }
+  };
+
   return (
     <div
       className={`min-h-screen flex font-sans transition-colors duration-200 ${
@@ -168,10 +180,8 @@ export default function App() {
           {/* Header */}
           <Header
             activeTab={activeTab}
-            setActiveTab={(tab) => {
-              setActiveTab(tab);
-              setActiveNav(tab);
-            }}
+            setActiveTab={handleNavigate}
+            hideTabs={activeTab === 'Global Stocks' || activeTab === 'Business Loans'}
             onOpenAdvisor={() => setAdvisorModalOpen(true)}
             onToggleTheme={toggleTheme}
             onOpenSettings={() => setSettingsModalOpen(true)}
@@ -182,9 +192,26 @@ export default function App() {
 
           {/* Tab Content Switching */}
           {activeTab === 'Fees' ? (
-            <FeesView isDark={isDark} readingMode={readingMode} />
+            <FeesView
+              isDark={isDark}
+              readingMode={readingMode}
+              onNavigate={handleNavigate}
+            />
           ) : activeTab === 'Liquidity' ? (
-            <LiquidityView isDark={isDark} />
+            <LiquidityView
+              isDark={isDark}
+              onNavigate={handleNavigate}
+            />
+          ) : activeTab === 'Global Stocks' ? (
+            <GlobalStocksView
+              isDark={isDark}
+              onBackToLiquidity={() => handleNavigate('Liquidity')}
+            />
+          ) : activeTab === 'Business Loans' ? (
+            <BusinessLoansView
+              isDark={isDark}
+              onBackToLiquidity={() => handleNavigate('Liquidity')}
+            />
           ) : (
             <>
               {/* Top 4 KPI Summary Cards */}
@@ -193,11 +220,19 @@ export default function App() {
               {/* Middle Row: Asset Performance + Portfolio Allocation */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 items-stretch">
                 <AssetPerformanceChart isDark={isDark} readingMode={readingMode} />
-                <PortfolioAllocation isDark={isDark} readingMode={readingMode} />
+                <PortfolioAllocation
+                  isDark={isDark}
+                  readingMode={readingMode}
+                  onNavigate={handleNavigate}
+                />
               </div>
 
               {/* Bottom Table: Holdings */}
-              <HoldingsTable isDark={isDark} readingMode={readingMode} />
+              <HoldingsTable
+                isDark={isDark}
+                readingMode={readingMode}
+                onNavigate={handleNavigate}
+              />
             </>
           )}
         </div>

@@ -5,11 +5,13 @@ import { HOLDINGS, HOLDINGS_SIMPLE } from '../data';
 interface HoldingsTableProps {
   isDark: boolean;
   readingMode?: 'simple' | 'expert' | null;
+  onNavigate?: (screen: string) => void;
 }
 
 export const HoldingsTable: React.FC<HoldingsTableProps> = ({
   isDark,
   readingMode,
+  onNavigate,
 }) => {
   const isSimple = readingMode === 'simple';
   const holdings = isSimple ? HOLDINGS_SIMPLE : HOLDINGS;
@@ -85,17 +87,25 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({
             {holdings.map((row, index) => {
               const isExpanded = expandedIds.has(row.id);
 
+              const isGlobalStocks = row.simpleName === 'Global Stocks' || row.name === 'Global Stocks';
+              const isBusinessLoans = row.simpleName === 'Business Loans' || row.name === 'Business Loans';
+              const isNavigable = isGlobalStocks || isBusinessLoans;
+
               return (
                 <tr
                   key={row.id}
                   id={`holding-row-${row.id}`}
                   onClick={() => {
-                    if (isSimple) {
+                    if (isGlobalStocks && onNavigate) {
+                      onNavigate('Global Stocks');
+                    } else if (isBusinessLoans && onNavigate) {
+                      onNavigate('Business Loans');
+                    } else if (isSimple) {
                       toggleRow(row.id);
                     }
                   }}
                   className={`group transition-all duration-150 select-none ${
-                    isSimple ? 'cursor-pointer' : ''
+                    isSimple || isNavigable ? 'cursor-pointer' : ''
                   } ${
                     index !== holdings.length - 1
                       ? isDark
@@ -104,10 +114,10 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({
                       : ''
                   } ${
                     isDark
-                      ? isSimple
+                      ? isSimple || isNavigable
                         ? 'hover:bg-slate-800/60 active:bg-slate-800/80'
                         : 'hover:bg-slate-800/40'
-                      : isSimple
+                      : isSimple || isNavigable
                       ? 'hover:bg-slate-50/90 active:bg-slate-100/70'
                       : 'hover:bg-slate-50/70'
                   } ${
@@ -126,13 +136,18 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({
                           className={`font-medium sm:font-normal text-xs sm:text-sm transition-colors duration-150 ${
                             isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
                           } ${
-                            isSimple
+                            isSimple || isNavigable
                               ? 'group-hover:text-[#1D63ED] dark:group-hover:text-sky-400 group-hover:font-medium'
                               : ''
                           }`}
                         >
                           {isSimple ? row.simpleName || row.name : row.name}
                         </span>
+                        {isNavigable && (
+                          <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-[#1D63ED] dark:text-sky-400 font-medium hidden sm:inline">
+                            View breakdown →
+                          </span>
+                        )}
                       </div>
 
                       {/* Simple Mode Plain-English Subtitle (Only opens for expanded row) */}

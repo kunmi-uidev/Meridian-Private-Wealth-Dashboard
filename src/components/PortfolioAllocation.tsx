@@ -5,11 +5,13 @@ import { ALLOCATIONS, ALLOCATIONS_SIMPLE } from '../data';
 interface PortfolioAllocationProps {
   isDark: boolean;
   readingMode?: 'simple' | 'expert' | null;
+  onNavigate?: (screen: string) => void;
 }
 
 export const PortfolioAllocation: React.FC<PortfolioAllocationProps> = ({
   isDark,
   readingMode,
+  onNavigate,
 }) => {
   const isSimple = readingMode === 'simple';
   const allocations = isSimple ? ALLOCATIONS_SIMPLE : ALLOCATIONS;
@@ -36,25 +38,48 @@ export const PortfolioAllocation: React.FC<PortfolioAllocationProps> = ({
 
       {/* Allocation Rows */}
       <div className="flex flex-col gap-3.5 sm:gap-4 mt-3.5 sm:mt-4">
-        {allocations.map((item, idx) => (
-          <div key={item.id} className="flex flex-col gap-1.5">
-            {/* Header: Name and Amount */}
-            <div className="flex items-center justify-between text-xs sm:text-sm">
-              <span
-                className={`font-normal truncate pr-2 ${
-                  isDark ? 'text-slate-400' : 'text-[#808080]'
-                }`}
-              >
-                {item.name}
-              </span>
-              <span
-                className={`font-medium flex-shrink-0 ${
-                  isDark ? 'text-slate-100' : 'text-slate-900'
-                }`}
-              >
-                {item.amount}
-              </span>
-            </div>
+        {allocations.map((item, idx) => {
+          const isGlobalStocks =
+            item.name.toLowerCase().includes('global') ||
+            item.name.toLowerCase().includes('equit') ||
+            item.name.toLowerCase().includes('stock');
+          const isBusinessLoans =
+            item.name.toLowerCase().includes('credit') ||
+            item.name.toLowerCase().includes('loan');
+          const isNavigable = isGlobalStocks || isBusinessLoans;
+
+          return (
+            <div
+              key={item.id}
+              onClick={() => {
+                if (isGlobalStocks && onNavigate) onNavigate('Global Stocks');
+                if (isBusinessLoans && onNavigate) onNavigate('Business Loans');
+              }}
+              className={`flex flex-col gap-1.5 ${
+                isNavigable ? 'cursor-pointer group' : ''
+              }`}
+            >
+              {/* Header: Name and Amount */}
+              <div className="flex items-center justify-between text-xs sm:text-sm">
+                <span
+                  className={`font-normal truncate pr-2 transition-colors ${
+                    isDark ? 'text-slate-400' : 'text-[#808080]'
+                  } ${
+                    isNavigable
+                      ? 'group-hover:text-[#1D63ED] dark:group-hover:text-sky-400'
+                      : ''
+                  }`}
+                >
+                  {item.name}
+                </span>
+                <span
+                  className={`font-medium flex-shrink-0 ${
+                    isDark ? 'text-slate-100' : 'text-slate-900'
+                  }`}
+                >
+                  {item.amount}
+                </span>
+              </div>
 
             {/* Custom Track & Striped Bar */}
             <div
@@ -88,9 +113,10 @@ export const PortfolioAllocation: React.FC<PortfolioAllocationProps> = ({
               </motion.div>
             </div>
           </div>
-        ))}
-      </div>
+        );
+      })}
     </div>
-  );
+  </div>
+);
 };
 

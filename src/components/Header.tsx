@@ -11,6 +11,7 @@ interface HeaderProps {
   onToggleMobileMenu?: () => void;
   userName?: string;
   isDark: boolean;
+  hideTabs?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -22,6 +23,7 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleMobileMenu,
   userName = 'Oluwabukunmi',
   isDark,
+  hideTabs = false,
 }) => {
   return (
     <header className="flex flex-col gap-5 sm:gap-6 w-full">
@@ -102,62 +104,64 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Tabs & Advisor Row */}
-      <div className="flex items-center justify-between flex-wrap gap-3 pt-0.5">
-        {/* Navigation Tabs (Overview, Fees, Liquidity) */}
-        <div
-          id="dashboard-tabs"
-          className={`flex items-center gap-1 p-1 rounded-xl border max-w-full overflow-x-auto ${
-            isDark
-              ? 'bg-slate-900/90 border-slate-800'
-              : 'bg-[#F2F4F7] border-slate-200/60'
-          }`}
-        >
-          {['Overview', 'Fees', 'Liquidity'].map((tab) => {
-            const isActive = activeTab === tab;
-            return (
+      {!hideTabs && (
+        <div className="flex items-center justify-between flex-wrap gap-3 pt-0.5">
+          {/* Navigation Tabs (Overview, Fees, Liquidity) */}
+          <div
+            id="dashboard-tabs"
+            className={`flex items-center gap-1 p-1 rounded-xl border max-w-full overflow-x-auto ${
+              isDark
+                ? 'bg-slate-900/90 border-slate-800'
+                : 'bg-[#F2F4F7] border-slate-200/60'
+            }`}
+          >
+            {['Overview', 'Fees', 'Liquidity'].map((tab) => {
+              const isActive = activeTab === tab;
+              return (
+                <button
+                  key={tab}
+                  id={`tab-${tab.toLowerCase()}`}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-150 whitespace-nowrap cursor-pointer ${
+                    isActive
+                      ? isDark
+                        ? 'bg-slate-800 text-white shadow-xs'
+                        : 'bg-white text-slate-900 shadow-xs border border-slate-200/50'
+                      : isDark
+                      ? 'text-slate-400 hover:text-slate-200'
+                      : 'text-[#808080] hover:text-slate-900'
+                  }`}
+                >
+                  {tab}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Advisor Badge */}
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs sm:text-sm text-[#808080] hidden sm:inline">
+                Advisor:
+              </span>
               <button
-                key={tab}
-                id={`tab-${tab.toLowerCase()}`}
-                onClick={() => setActiveTab(tab)}
-                className={`px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-150 whitespace-nowrap cursor-pointer ${
-                  isActive
-                    ? isDark
-                      ? 'bg-slate-800 text-white shadow-xs'
-                      : 'bg-white text-slate-900 shadow-xs border border-slate-200/50'
-                    : isDark
-                    ? 'text-slate-400 hover:text-slate-200'
-                    : 'text-[#808080] hover:text-slate-900'
+                id="advisor-pill"
+                onClick={onOpenAdvisor}
+                className={`flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs sm:text-sm font-medium transition-all cursor-pointer ${
+                  isDark
+                    ? 'bg-slate-800/90 border-slate-700 text-slate-200 hover:border-slate-600'
+                    : 'bg-white border-slate-200 text-slate-800 hover:border-slate-300 shadow-xs'
                 }`}
               >
-                {tab}
+                <span className="w-5 h-5 rounded-full bg-[#EBF2FE] dark:bg-blue-900/60 text-[#1D63ED] dark:text-blue-300 text-[10px] font-medium flex items-center justify-center">
+                  MT
+                </span>
+                <span className="text-slate-700 dark:text-slate-200">Mark T.</span>
               </button>
-            );
-          })}
-        </div>
-
-        {/* Advisor Badge */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs sm:text-sm text-[#808080] hidden sm:inline">
-              Advisor:
-            </span>
-            <button
-              id="advisor-pill"
-              onClick={onOpenAdvisor}
-              className={`flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs sm:text-sm font-medium transition-all cursor-pointer ${
-                isDark
-                  ? 'bg-slate-800/90 border-slate-700 text-slate-200 hover:border-slate-600'
-                  : 'bg-white border-slate-200 text-slate-800 hover:border-slate-300 shadow-xs'
-              }`}
-            >
-              <span className="w-5 h-5 rounded-full bg-[#EBF2FE] dark:bg-blue-900/60 text-[#1D63ED] dark:text-blue-300 text-[10px] font-medium flex items-center justify-center">
-                MT
-              </span>
-              <span className="text-slate-700 dark:text-slate-200">Mark T.</span>
-            </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </header>
   );
 };

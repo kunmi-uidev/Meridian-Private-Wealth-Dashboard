@@ -4,6 +4,7 @@ import { Info, X, CheckCircle2, TrendingUp, Calculator } from 'lucide-react';
 interface FeesViewProps {
   isDark: boolean;
   readingMode?: 'simple' | 'expert' | null;
+  onNavigate?: (screen: string) => void;
 }
 
 interface FeeItem {
@@ -111,7 +112,7 @@ const FEE_HOLDINGS_EXPERT: FeeItem[] = [
   },
 ];
 
-export const FeesView: React.FC<FeesViewProps> = ({ isDark, readingMode }) => {
+export const FeesView: React.FC<FeesViewProps> = ({ isDark, readingMode, onNavigate }) => {
   const isSimple = readingMode === 'simple';
   const feeList = isSimple ? FEE_HOLDINGS_SIMPLE : FEE_HOLDINGS_EXPERT;
   const [showCalculationModal, setShowCalculationModal] = useState(false);
@@ -324,12 +325,22 @@ export const FeesView: React.FC<FeesViewProps> = ({ isDark, readingMode }) => {
             <tbody className="text-xs sm:text-sm">
               {feeList.map((row, index) => {
                 const isExpanded = expandedRowIds.has(row.id);
+                const isGlobalStocks = row.simpleName === 'Global Stocks' || row.name === 'Global Stocks';
+                const isBusinessLoans = row.simpleName === 'Business Loans' || row.name === 'Business Loans';
 
                 return (
                   <tr
                     key={row.id}
                     id={`fee-row-${row.id}`}
-                    onClick={() => toggleRow(row.id)}
+                    onClick={() => {
+                      if (isGlobalStocks && onNavigate) {
+                        onNavigate('Global Stocks');
+                      } else if (isBusinessLoans && onNavigate) {
+                        onNavigate('Business Loans');
+                      } else {
+                        toggleRow(row.id);
+                      }
+                    }}
                     className={`group transition-all duration-150 cursor-pointer select-none ${
                       index !== feeList.length - 1
                         ? isDark
@@ -351,13 +362,20 @@ export const FeesView: React.FC<FeesViewProps> = ({ isDark, readingMode }) => {
                     {/* Holding Name & Expandable Description */}
                     <td className="py-4 sm:py-5 px-4 sm:px-6 align-top">
                       <div className="flex flex-col">
-                        <span
-                          className={`font-normal text-xs sm:text-sm transition-colors duration-150 ${
-                            isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
-                          } group-hover:text-[#1D63ED] dark:group-hover:text-sky-400`}
-                        >
-                          {isSimple ? row.simpleName : row.name}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`font-normal text-xs sm:text-sm transition-colors duration-150 ${
+                              isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
+                            } group-hover:text-[#1D63ED] dark:group-hover:text-sky-400`}
+                          >
+                            {isSimple ? row.simpleName : row.name}
+                          </span>
+                          {(isGlobalStocks || isBusinessLoans) && (
+                            <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-[#1D63ED] dark:text-sky-400 font-medium hidden sm:inline">
+                              View breakdown →
+                            </span>
+                          )}
+                        </div>
 
                         {/* Description ONLY shown when row is clicked */}
                         {isExpanded && (
