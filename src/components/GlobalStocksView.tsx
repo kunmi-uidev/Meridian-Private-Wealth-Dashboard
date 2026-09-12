@@ -237,7 +237,7 @@ export const GlobalStocksView: React.FC<GlobalStocksViewProps> = ({
               isDark ? 'text-slate-400' : 'text-[#808080]'
             }`}
           >
-            63% of Total Value
+            42% of Total Value
           </div>
         </div>
 

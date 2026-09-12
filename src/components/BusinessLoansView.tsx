@@ -189,7 +189,7 @@ export const BusinessLoansView: React.FC<BusinessLoansViewProps> = ({
               isDark ? 'text-slate-400' : 'text-[#808080]'
             }`}
           >
-            63% of Total Value
+            24% of Total Value
           </div>
         </div>
 
