@@ -45,8 +45,16 @@ export const PortfolioAllocation: React.FC<PortfolioAllocationProps> = ({
             item.name.toLowerCase().includes('stock');
           const isBusinessLoans =
             item.name.toLowerCase().includes('credit') ||
-            item.name.toLowerCase().includes('loan');
-          const isNavigable = isGlobalStocks || isBusinessLoans;
+            item.name.toLowerCase().includes('loan') && !item.name.toLowerCase().includes('safer');
+          const isSaferLoans =
+            item.name.toLowerCase().includes('safer') ||
+            item.name.toLowerCase().includes('fixed') ||
+            item.name.toLowerCase().includes('income') ||
+            item.name.toLowerCase().includes('bond');
+          const isCash =
+            item.name.toLowerCase().includes('cash') ||
+            item.name.toLowerCase().includes('liquid');
+          const isNavigable = isGlobalStocks || isBusinessLoans || isSaferLoans || isCash;
 
           return (
             <div
@@ -54,6 +62,8 @@ export const PortfolioAllocation: React.FC<PortfolioAllocationProps> = ({
               onClick={() => {
                 if (isGlobalStocks && onNavigate) onNavigate('Global Stocks');
                 if (isBusinessLoans && onNavigate) onNavigate('Business Loans');
+                if (isSaferLoans && onNavigate) onNavigate('Safer Loans');
+                if (isCash && onNavigate) onNavigate('Cash');
               }}
               className={`flex flex-col gap-1.5 ${
                 isNavigable ? 'cursor-pointer group' : ''

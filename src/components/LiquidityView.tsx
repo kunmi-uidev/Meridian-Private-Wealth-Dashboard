@@ -365,13 +365,20 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark, onNavigate
 
           <div className="flex flex-col gap-4 sm:gap-5 mt-4 sm:mt-5">
             {LIQUIDITY_ALLOCATIONS.map((item, idx) => {
-              const isNavigable = item.name === 'Global Equities' || item.name === 'Private Credit';
+              const isGlobalStocks = item.name === 'Global Equities';
+              const isBusinessLoans = item.name === 'Private Credit';
+              const isSaferLoans = item.name === 'Fixed Income';
+              const isCash = item.name === 'Cash';
+              const isNavigable = isGlobalStocks || isBusinessLoans || isSaferLoans || isCash;
+
               return (
                 <div
                   key={item.id}
                   onClick={() => {
-                    if (item.name === 'Global Equities') onNavigate?.('Global Stocks');
-                    if (item.name === 'Private Credit') onNavigate?.('Business Loans');
+                    if (isGlobalStocks) onNavigate?.('Global Stocks');
+                    if (isBusinessLoans) onNavigate?.('Business Loans');
+                    if (isSaferLoans) onNavigate?.('Safer Loans');
+                    if (isCash) onNavigate?.('Cash');
                   }}
                   className={`flex flex-col gap-1.5 ${isNavigable ? 'cursor-pointer group' : ''}`}
                 >
@@ -468,6 +475,12 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark, onNavigate
                         )}
                         fill={seg.color}
                         className="transition-all duration-200 cursor-pointer"
+                        onClick={() => {
+                          if (seg.id === 'equities') onNavigate?.('Global Stocks');
+                          if (seg.id === 'credit') onNavigate?.('Business Loans');
+                          if (seg.id === 'income') onNavigate?.('Safer Loans');
+                          if (seg.id === 'cash') onNavigate?.('Cash');
+                        }}
                         onMouseEnter={() => setHoveredSlice(seg.id)}
                         onMouseLeave={() => setHoveredSlice(null)}
                       />
@@ -547,18 +560,19 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark, onNavigate
 
               {/* Row 2 Col 1: Fixed Income */}
               <div
-                className={`flex flex-col p-1.5 -m-1.5 rounded-lg transition-colors cursor-pointer ${
+                className={`flex flex-col p-1.5 -m-1.5 rounded-lg transition-colors cursor-pointer group ${
                   hoveredSlice === 'income'
                     ? isDark
                       ? 'bg-slate-800/80 ring-1 ring-purple-500/40'
                       : 'bg-purple-50/80 ring-1 ring-purple-300'
                     : ''
                 }`}
+                onClick={() => onNavigate?.('Safer Loans')}
                 onMouseEnter={() => setHoveredSlice('income')}
                 onMouseLeave={() => setHoveredSlice(null)}
               >
                 <span
-                  className={`text-xs sm:text-sm font-normal ${
+                  className={`text-xs sm:text-sm font-normal group-hover:text-[#1D63ED] dark:group-hover:text-sky-400 transition-colors ${
                     isDark ? 'text-slate-400' : 'text-slate-600'
                   }`}
                 >
@@ -575,18 +589,19 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark, onNavigate
 
               {/* Row 2 Col 2: Cash */}
               <div
-                className={`flex flex-col p-1.5 -m-1.5 rounded-lg transition-colors cursor-pointer ${
+                className={`flex flex-col p-1.5 -m-1.5 rounded-lg transition-colors cursor-pointer group ${
                   hoveredSlice === 'cash'
                     ? isDark
                       ? 'bg-slate-800/80 ring-1 ring-lime-500/40'
                       : 'bg-lime-50/80 ring-1 ring-lime-300'
                     : ''
                 }`}
+                onClick={() => onNavigate?.('Cash')}
                 onMouseEnter={() => setHoveredSlice('cash')}
                 onMouseLeave={() => setHoveredSlice(null)}
               >
                 <span
-                  className={`text-xs sm:text-sm font-normal ${
+                  className={`text-xs sm:text-sm font-normal group-hover:text-[#1D63ED] dark:group-hover:text-sky-400 transition-colors ${
                     isDark ? 'text-slate-400' : 'text-slate-600'
                   }`}
                 >
@@ -641,17 +656,25 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark, onNavigate
             <tbody className="text-xs sm:text-sm">
               {LIQUIDITY_HOLDINGS.map((row, index) => {
                 const isExpanded = expandedRowIds.has(row.id);
-                const isDirectNav = row.name === 'Global Stocks' || row.name === 'Business Loans';
+                const isGlobalStocks = row.name === 'Global Stocks';
+                const isBusinessLoans = row.name === 'Business Loans';
+                const isSaferLoans = row.name === 'Safer Loans';
+                const isCash = row.name === 'Cash';
+                const isDirectNav = isGlobalStocks || isBusinessLoans || isSaferLoans || isCash;
 
                 return (
                   <tr
                     key={row.id}
                     id={`liquidity-holding-row-${row.id}`}
                     onClick={() => {
-                      if (row.name === 'Global Stocks') {
-                        onNavigate?.('Global Stocks');
-                      } else if (row.name === 'Business Loans') {
-                        onNavigate?.('Business Loans');
+                      if (isGlobalStocks && onNavigate) {
+                        onNavigate('Global Stocks');
+                      } else if (isBusinessLoans && onNavigate) {
+                        onNavigate('Business Loans');
+                      } else if (isSaferLoans && onNavigate) {
+                        onNavigate('Safer Loans');
+                      } else if (isCash && onNavigate) {
+                        onNavigate('Cash');
                       } else {
                         toggleRow(row.id);
                       }

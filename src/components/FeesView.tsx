@@ -327,6 +327,9 @@ export const FeesView: React.FC<FeesViewProps> = ({ isDark, readingMode, onNavig
                 const isExpanded = expandedRowIds.has(row.id);
                 const isGlobalStocks = row.simpleName === 'Global Stocks' || row.name === 'Global Stocks';
                 const isBusinessLoans = row.simpleName === 'Business Loans' || row.name === 'Business Loans';
+                const isSaferLoans = row.simpleName === 'Safer Loans' || row.name.includes('Government Bonds');
+                const isCash = row.simpleName === 'Cash' || row.name.includes('Liquid Cash');
+                const isNavigable = isGlobalStocks || isBusinessLoans || isSaferLoans || isCash;
 
                 return (
                   <tr
@@ -337,6 +340,10 @@ export const FeesView: React.FC<FeesViewProps> = ({ isDark, readingMode, onNavig
                         onNavigate('Global Stocks');
                       } else if (isBusinessLoans && onNavigate) {
                         onNavigate('Business Loans');
+                      } else if (isSaferLoans && onNavigate) {
+                        onNavigate('Safer Loans');
+                      } else if (isCash && onNavigate) {
+                        onNavigate('Cash');
                       } else {
                         toggleRow(row.id);
                       }
@@ -370,7 +377,7 @@ export const FeesView: React.FC<FeesViewProps> = ({ isDark, readingMode, onNavig
                           >
                             {isSimple ? row.simpleName : row.name}
                           </span>
-                          {(isGlobalStocks || isBusinessLoans) && (
+                          {isNavigable && (
                             <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-[#1D63ED] dark:text-sky-400 font-medium hidden sm:inline">
                               View breakdown →
                             </span>

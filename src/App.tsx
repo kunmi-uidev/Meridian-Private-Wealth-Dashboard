@@ -14,6 +14,8 @@ import { FeesView } from './components/FeesView';
 import { LiquidityView } from './components/LiquidityView';
 import { GlobalStocksView } from './components/GlobalStocksView';
 import { BusinessLoansView } from './components/BusinessLoansView';
+import { SaferLoansView } from './components/SaferLoansView';
+import { CashView } from './components/CashView';
 import { AdvisorModal } from './components/AdvisorModal';
 import { ScheduleAuditModal } from './components/ScheduleAuditModal';
 import { SettingsModal } from './components/SettingsModal';
@@ -138,7 +140,12 @@ export default function App() {
   }
 
   const handleNavigate = (view: string) => {
-    if (view === 'Global Stocks' || view === 'Business Loans') {
+    if (
+      view === 'Global Stocks' ||
+      view === 'Business Loans' ||
+      view === 'Safer Loans' ||
+      view === 'Cash'
+    ) {
       setActiveTab(view);
       setActiveNav('Liquidity');
     } else {
@@ -181,7 +188,7 @@ export default function App() {
           <Header
             activeTab={activeTab}
             setActiveTab={handleNavigate}
-            hideTabs={activeTab === 'Global Stocks' || activeTab === 'Business Loans'}
+            hideTabs={['Global Stocks', 'Business Loans', 'Safer Loans', 'Cash'].includes(activeTab)}
             onOpenAdvisor={() => setAdvisorModalOpen(true)}
             onToggleTheme={toggleTheme}
             onOpenSettings={() => setSettingsModalOpen(true)}
@@ -209,6 +216,16 @@ export default function App() {
             />
           ) : activeTab === 'Business Loans' ? (
             <BusinessLoansView
+              isDark={isDark}
+              onBackToLiquidity={() => handleNavigate('Liquidity')}
+            />
+          ) : activeTab === 'Safer Loans' ? (
+            <SaferLoansView
+              isDark={isDark}
+              onBackToLiquidity={() => handleNavigate('Liquidity')}
+            />
+          ) : activeTab === 'Cash' ? (
+            <CashView
               isDark={isDark}
               onBackToLiquidity={() => handleNavigate('Liquidity')}
             />

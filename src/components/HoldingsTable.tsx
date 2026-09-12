@@ -87,9 +87,21 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({
             {holdings.map((row, index) => {
               const isExpanded = expandedIds.has(row.id);
 
-              const isGlobalStocks = row.simpleName === 'Global Stocks' || row.name === 'Global Stocks';
-              const isBusinessLoans = row.simpleName === 'Business Loans' || row.name === 'Business Loans';
-              const isNavigable = isGlobalStocks || isBusinessLoans;
+              const isGlobalStocks =
+                row.simpleName === 'Global Stocks' || row.name === 'Global Stocks' || row.category === 'Global Equities';
+              const isBusinessLoans =
+                row.simpleName === 'Business Loans' || row.name === 'Business Loans' || row.category === 'Private Credit';
+              const isSaferLoans =
+                row.simpleName === 'Safer Loans' ||
+                row.name === 'Safer Loans' ||
+                row.category === 'Fixed Income' ||
+                row.name.includes('Fixed Income');
+              const isCash =
+                row.simpleName === 'Cash' ||
+                row.name === 'Cash' ||
+                row.category === 'Cash & Alternatives' ||
+                row.name.includes('Cash');
+              const isNavigable = isGlobalStocks || isBusinessLoans || isSaferLoans || isCash;
 
               return (
                 <tr
@@ -100,6 +112,10 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({
                       onNavigate('Global Stocks');
                     } else if (isBusinessLoans && onNavigate) {
                       onNavigate('Business Loans');
+                    } else if (isSaferLoans && onNavigate) {
+                      onNavigate('Safer Loans');
+                    } else if (isCash && onNavigate) {
+                      onNavigate('Cash');
                     } else if (isSimple) {
                       toggleRow(row.id);
                     }
