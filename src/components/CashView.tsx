@@ -394,8 +394,8 @@ export const CashView: React.FC<CashViewProps> = ({
 
                       {/* Total Value */}
                       <td
-                        className={`py-4 sm:py-5 px-4 sm:px-6 align-middle font-normal ${
-                          isDark ? 'text-slate-300' : 'text-[#1e1e1e]'
+                        className={`py-4 sm:py-5 px-4 sm:px-6 align-middle font-medium ${
+                          isDark ? 'text-slate-200' : 'text-[#1e1e1e]'
                         }`}
                       >
                         {row.totalValue}

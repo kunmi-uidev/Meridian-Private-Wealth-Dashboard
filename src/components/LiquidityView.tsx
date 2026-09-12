@@ -730,11 +730,11 @@ export const LiquidityView: React.FC<LiquidityViewProps> = ({ isDark, onNavigate
 
                     {/* Fee Paid */}
                     <td
-                      className={`py-4 sm:py-5 px-4 sm:px-6 align-top font-normal ${
-                        isDark ? 'text-slate-400' : 'text-[#808080]'
+                      className={`py-4 sm:py-5 px-4 sm:px-6 align-top font-medium ${
+                        isDark ? 'text-slate-200' : 'text-slate-900'
                       }`}
                     >
-                      <span className="font-normal text-slate-700 dark:text-slate-300">
+                      <span className="font-medium text-slate-900 dark:text-slate-100">
                         {row.feePaid}
                       </span>
                     </td>

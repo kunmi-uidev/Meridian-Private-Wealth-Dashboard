@@ -181,8 +181,8 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({
 
                   {/* Value */}
                   <td
-                    className={`py-4 sm:py-5 px-4 sm:px-6 font-normal ${
-                      isDark ? 'text-slate-400' : 'text-[#808080]'
+                    className={`py-4 sm:py-5 px-4 sm:px-6 font-medium ${
+                      isDark ? 'text-slate-200' : 'text-slate-900'
                     }`}
                   >
                     {row.valueFormatted}
